@@ -9,9 +9,9 @@
 enum var_types { I, S, D, STR, IA, SA, DA, STRA };
 
 typedef union VALUE {
-  int integer;
-  float sin;
-  double dub;
+  int intg;
+  float sing;
+  double dubl;
   char *str;
   void *array;
 } value;
@@ -20,6 +20,7 @@ typedef union VALUE {
 typedef struct VARIABLE {
   char name [VARNAME_MAX];
   value val;
+  var_types type;
 } variable;
 
 #endif

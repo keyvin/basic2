@@ -8,11 +8,12 @@
 //read token
 
 
-
+//the : operator combines statements into a single line-num
+//the ; tells print to omit a new line
 
 uint8_t is_operator(char val)
 {
-  if (val == '+' || val == '-' || val =='/' || val == '*' || val == '^' || val =='(' || val == ')' )
+  if (val == '+' || val == '-' || val =='/' || val == '*' || val == '^' || val =='(' || val == ')' || val == '<' || val == '>'|| val == '='|| val ==':' ||val ==';')
     return 1;
   return 0;
 }
@@ -42,6 +43,12 @@ void read(char **string, token *token) {
   //operator
   if (is_operator(*ptr)){
     token->value[0]=*ptr;
+    token->value[1]='\0';
+    if (*(ptr+1) =='>' ||*(ptr+1) == '=' )
+    {
+      token->value[1] = *(++ptr);
+      token->value[2] = '\0';
+    }  
     token->type = OPERATOR;
     ptr++;
     goto EXIT;
@@ -50,7 +57,7 @@ void read(char **string, token *token) {
   if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.')
     isint = 1;
   //compare start to position to determine lenth until end of string or space
-  while((ptr - *string) < MAX_TOKEN_LENGTH && *ptr != '\0' && *ptr !=' ' && !is_operator(*ptr)){
+  while(count < MAX_TOKEN_LENGTH && *ptr != '\0' && *ptr !=' ' && !is_operator(*ptr)){
     
     if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')){
       //error - token started with numeral
@@ -73,7 +80,8 @@ void read(char **string, token *token) {
 	goto ERROR;
       deciread=1;
     }
-    token->value[ptr-*string] = *ptr;
+    token->value[count] = *ptr;
+    count++;
     ptr++;
 
   }
@@ -101,7 +109,7 @@ void read(char **string, token *token) {
 int main(int argv, char **argc)
 {
 
-  char *totoken = "1234.45+64+TOTALLY/6(78)(-10)";
+  char *totoken = "1234.45+64+ <> TOTALLY/6(78)(-10)";
   char *sac = totoken;
   int count = 0;
   token a;
@@ -112,7 +120,7 @@ int main(int argv, char **argc)
     switch (a.type)
     {
       case OPERATOR:
-	printf("Operator: %c\n", a.value[0]);
+	printf("Operator: %s\n", a.value);
 	break;
     default:
 		    

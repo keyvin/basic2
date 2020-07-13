@@ -7,7 +7,7 @@
 #define MAX_STRING 128
 
 
-enum t_type {VARIABLE, INTEGER, FLOAT, ERROR, OPERATOR, STRING,EOL, INVALID};
+enum t_type {VARIABLE, INTEGER, FLOAT, ERROR, OPERATOR, STRING,EOL, INVALID };
 typedef struct TOKEN {
   char value[MAX_TOKEN_LENGTH];
   enum t_type type;

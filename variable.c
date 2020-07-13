@@ -6,6 +6,7 @@
 
 #define ERROR "error"
 
+//if token2 is a string, it should have already been read into the string buffer
 uint8_t  populate_variable(variable *var, token *token1 , token *token2)
 {
   //assume token1 is a variable name. If the last char is $, %, ! or alpha matters. First char of name is type.....
@@ -17,27 +18,43 @@ uint8_t  populate_variable(variable *var, token *token1 , token *token2)
   }
   switch (t) {
   case '!':
-    t
-    
-
-     token1->value[t1_1] = '\0';
-  var->name[0]
+    var->type = D;
+    var->value.dubl = read_double(token2->value);
+    break;
+  case '%':
+    var->type = I;
+    var->value.intg = read_int(token2->value);
+    break;
+    //copy out of the global string buffer
+  case '$':
+    var->type = S;    
+    var->value.str = (char *) malloc(sizeof(char)*strlen(string_buffer));
+    break;
+  default:
+    var->value.sing = read_float(token2->value);
+    var->type = f;
+    break;
+  }
+  strcpy(var->name, token1->value);
+  
       
   return 1;
 }
-
+/*replace with my own*/
 float read_float(char *s)
 {
-
-  return 0f;
+  atof(s);
+  return 0.0;
 }
 
 double read_double(char *s)
 {
-  return 0d;
+  atod(s);
+  return 0.0;
 }
 
 int read_int(char *)
 {
+  atoi(s);
   return 0;
 }

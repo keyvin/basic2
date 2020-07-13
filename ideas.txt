@@ -1,0 +1,11 @@
+Ideas 
+
+Keep only two or three working variables alive per interpreter frame. Store results. 
+
+Rules for parens
+
+( - next to an immediate, *. next to an array variable, index.
+
+return "," as an operator (it is)
+
+
