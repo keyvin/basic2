@@ -9,3 +9,27 @@ Rules for parens
 return "," as an operator (it is)
 
 
+a line can only start with a number if it will be a line-no. A numerical token or string should generate an error
+
+
+if there is a line number, it must be added to the program
+
+next symbol is either a reserved word or a variable assignment. Otherwise an error
+   expr1                     expr2			   expr3 
+if (read tokens until) then (read tokens until else) else (read tokens)
+       expr1 
+while (read tokens)
+
+FOR (symbol) = VAL to VAL
+
+NEXT
+
+for variables re-encountered will be overwritten (restarted) in the current execution frame
+a valid expression can be evaluated. ':" can deliminate several expressions.
+
+assignment is an expression. gosub is an expression. functions are an expression. 
+
+
+any expression that contains a string returns a string.
+
+shunting yard algorithm - evaluate functions 

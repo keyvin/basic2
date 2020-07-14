@@ -5,7 +5,6 @@
 
 #define VARNAME_MAX 20
 
-
 enum var_types { I, S, D, STR, IA, SA, DA, STRA };
 
 typedef union VALUE {

@@ -11,4 +11,6 @@ char string_buffer[400];
 variable working1;
 variable working2;
 
+unsigned int gosub_depth = 0;
+
 #endif

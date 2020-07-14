@@ -2,22 +2,59 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-
-
 #include "tokens.h"
+
+//#include "expressions.h"
 //read token
 
 
 //the : operator combines statements into a single line-num
 //the ; tells print to omit a new line
+uint8_t expression(char **);
 
 uint8_t is_operator(char val)
 {
+
+  switch (val) {
+  case '+':
+    return PLUS;
+  case '-':
+    return MINUS;
+  case '/':
+    return DIVIDE;    
+  case '*':
+    return MULTIPLY;
+  case '^':
+    return POWER;
+  case '(':
+    return OPAREN;
+  case ')':
+    return CPAREN;
+  case '<':
+    return LT;
+  case '>':
+    return GT;
+  case '=':
+    return EQ;
+  case ':':
+    return COLON;
+  case ';':
+    return SEMI;
+  default:
+    return 0;
+  }
+  return 0;
+    
+}
+
+    
+  
+/*
   if (val == '+' || val == '-' || val =='/' || val == '*' || val == '^' || val =='(' || val == ')' || val == '<' || val == '>'|| val == '='|| val ==':' ||val ==';')
     return 1;
   return 0;
 }
-
+*/
 
 //todo Check if int or float contains an E.
 
@@ -40,17 +77,29 @@ void read(char **string, token *token) {
     ptr++;
     goto EXIT;
   }
-  //operator
-  if (is_operator(*ptr)){
-    token->value[0]=*ptr;
-    token->value[1]='\0';
-    if (*(ptr+1) =='>' ||*(ptr+1) == '=' )
-    {
-      token->value[1] = *(++ptr);
-      token->value[2] = '\0';
-    }  
+
+  //operator - uses isint to avoid stack use...
+  if (isint = is_operator(*ptr)){
+    token->value[0]= isint;
     token->type = OPERATOR;
+    token->value[1]='\0';
     ptr++;
+    if (isint == LT){
+      if (*(ptr+1) == '>'){
+	token->value[0] = NOT_EQ;
+	ptr++;
+      }
+      else if (*(ptr+1)=='='){
+	token->value[0] = LTE;
+	ptr++;
+      }
+    }
+    else if (isint == GT) {
+      if ((*ptr+1)=='='){
+	token->value[0] = GTE;
+	ptr++;
+      }
+    }        
     goto EXIT;
   }
   //starts with int?
@@ -71,10 +120,6 @@ void read(char **string, token *token) {
 	  goto ERROR;           
       }
     }
-    //unnessecary?
-    if (*ptr >='0' && *ptr <='9'){
-      
-    }
     if (*ptr == '.'){
       if (deciread)
 	goto ERROR;
@@ -85,11 +130,7 @@ void read(char **string, token *token) {
     ptr++;
 
   }
-  goto LOOP_EXIT;
- ERROR:
-	strcpy(token->value, TOKEN_ERROR_1);
-	token->type = INVALID;	
-	return;
+
  LOOP_EXIT:
 	//point string to ptr for advancing to next token
 	if (deciread && isint)
@@ -97,10 +138,14 @@ void read(char **string, token *token) {
 	else if (isint)
 	  token->type = INTEGER;
 	else
-	  token->type = VARIABLE;
+	  token->type = SYMBOL;
  EXIT:
 	token->value[ptr-*string] = '\0';
 	*string = ptr;
+	return;
+ ERROR:
+	strcpy(token->value, TOKEN_ERROR_1);
+	token->type = INVALID;	
 	return;
 }
     
@@ -120,7 +165,7 @@ int main(int argv, char **argc)
     switch (a.type)
     {
       case OPERATOR:
-	printf("Operator: %s\n", a.value);
+	printf("Operator: %d\n", (int) a.value[0]);
 	break;
     default:
 		    
@@ -128,7 +173,9 @@ int main(int argv, char **argc)
     }
     read(&sac, &a);
   }
-
+  sac = totoken;
+  expression( &sac);
+     
   return 0;
 }
   
