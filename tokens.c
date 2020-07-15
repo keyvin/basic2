@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "tokens.h"
-
+#include "expression.h"
 //#include "expressions.h"
 //read token
 
@@ -68,6 +68,7 @@ void read(char **string, token *token) {
   //advance whitespace
   if (*ptr == '\0'){
     token->type = EOL;
+    goto EXIT;
   }
   while (*ptr == ' ')
     ptr++;
@@ -82,20 +83,21 @@ void read(char **string, token *token) {
   if (isint = is_operator(*ptr)){
     token->value[0]= isint;
     token->type = OPERATOR;
-    token->value[1]='\0';
+    //needed at the bottom of the loop
+    count++; 
     ptr++;
     if (isint == LT){
-      if (*(ptr+1) == '>'){
+      if (*ptr == '>'){
 	token->value[0] = NOT_EQ;
 	ptr++;
       }
-      else if (*(ptr+1)=='='){
+      else if (*ptr=='='){
 	token->value[0] = LTE;
 	ptr++;
       }
     }
     else if (isint == GT) {
-      if ((*ptr+1)=='='){
+      if (*ptr=='='){
 	token->value[0] = GTE;
 	ptr++;
       }
@@ -140,7 +142,7 @@ void read(char **string, token *token) {
 	else
 	  token->type = SYMBOL;
  EXIT:
-	token->value[ptr-*string] = '\0';
+	token->value[count] = '\0';
 	*string = ptr;
 	return;
  ERROR:
@@ -154,7 +156,7 @@ void read(char **string, token *token) {
 int main(int argv, char **argc)
 {
 
-  char *totoken = "1234.45+64+ <> TOTALLY/6(78)(-10)";
+  char *totoken = "1234.45+64 <> TOTALLY/678-10";
   char *sac = totoken;
   int count = 0;
   token a;
@@ -175,8 +177,21 @@ int main(int argv, char **argc)
   }
   sac = totoken;
   expression( &sac);
-     
-  return 0;
+  printf("stack contents:\n");
+  for (int b =0; b <= working_top; b++){
+    a = working_stack[b];
+    switch (a.type)
+      {
+      case OPERATOR:
+	printf("Operator: %d\n", (int) a.value[0]);
+	break;
+    default:
+		    
+      printf("a->value: %s\n", a.value);
+    }
+  };
+    return 0;
+    
 }
   
 
