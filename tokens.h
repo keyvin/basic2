@@ -26,7 +26,7 @@
 #define LTE 17
 #define NOT_EQ 18
 #define EQ 19
-
+static char TOKEN_CHAR[] = {'\0', '+', '-', '/', '*', '^', '(', ')', ',', ';', ':','A', 'O', 'N', 'G', 'L','E', 'e','!', '='};       
 static int TOKEN_PRECEDENCE[MAX_TOKENS] = {0,0,0,1,1,1,2,2,0,0,0,0,0,0,0,0,0,0,0};
 
 enum t_type {SYMBOL, INTEGER, FLOAT, ERROR, OPERATOR, STRING,EOL, INVALID };

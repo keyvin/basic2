@@ -40,6 +40,8 @@ uint8_t is_operator(char val)
     return COLON;
   case ';':
     return SEMI;
+  case ',':
+    return COMMA;
   default:
     return 0;
   }
@@ -151,46 +153,58 @@ void read(char **string, token *token) {
 	return;
 }
     
+void dump_token(token to_dump)
+{
 
-      
+  switch (to_dump.type)   {
+  case FLOAT:  
+  case INTEGER:
+  case SYMBOL:
+    printf("SYMBOL - %s\n", to_dump.value);
+    break;
+    
+  case ERROR:
+    printf("ERROR\n");
+    break;
+  case OPERATOR:
+    printf("OPERATOR - %c, PRECEDENCE - %d\n", TOKEN_CHAR[to_dump.value[0]], TOKEN_PRECEDENCE[to_dump.value[0]]);
+    break;
+  case STRING:
+    break;
+  case INVALID:
+    break;
+  default:
+    break;
+  }
+
+}    
+
+
+
 int main(int argv, char **argc)
 {
 
   char *totoken = "1234.45+64 <> TOTALLY/678-10";
+  char *taktak = "23*12*VAR(6,2,3)-2/2*(12-12)";
   char *sac = totoken;
   int count = 0;
   token a;
   read(&sac, &a);
   
-  while (a.type != INVALID && a.type != EOL && count++<20 && *sac!='\0'){
 
-    switch (a.type)
-    {
-      case OPERATOR:
-	printf("Operator: %d\n", (int) a.value[0]);
-	break;
-    default:
-		    
-      printf("a->value: %s\n", a.value);
-    }
-    read(&sac, &a);
-  }
   sac = totoken;
+  expression( &sac );
+  printf("stack contents:\n");
+  for (int b=0; b<=working_top; b++){    
+    dump_token(working_stack[b]);
+  }
+  sac = taktak;
   expression( &sac);
   printf("stack contents:\n");
-  for (int b =0; b <= working_top; b++){
-    a = working_stack[b];
-    switch (a.type)
-      {
-      case OPERATOR:
-	printf("Operator: %d\n", (int) a.value[0]);
-	break;
-    default:
-		    
-      printf("a->value: %s\n", a.value);
-    }
-  };
-    return 0;
+  for (int b=0; b<=working_top; b++){    
+    dump_token(working_stack[b]);
+  }
+  return 0;
     
 }
   

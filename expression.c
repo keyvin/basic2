@@ -19,7 +19,7 @@ uint8_t expression(char **line)
   if (next.type == OPERATOR)
     goto E_ERROR;
 
-  while (next.type != INVALID && next.type != EOL && working_top < MAX_T_STACK  && *position!='\0') {
+  while (next.type != INVALID && next.type != EOL && working_top < MAX_T_STACK) {
 
        
     if (next.type == EOL)
@@ -60,9 +60,12 @@ uint8_t expression(char **line)
     }
    	  	   
     previous = next;
+    if (*position=='\0')
+      break;
     read(&position, &next);
   }
-  pop_operators(0);
+  while (operator_top >=0)
+    working_stack[++working_top] = operator_stack[operator_top--];
   *line = position;
   return 0;
   
@@ -73,12 +76,16 @@ uint8_t expression(char **line)
 uint8_t pop_operators(uint8_t precedence)
 {
   
-  while  (operator_top >= 0 && operator_stack[operator_top].value[0] !=OPAREN && precedence < TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0] ] ) {   
+  printf("incoming precedence %d, top precedence %d\n", precedence, TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] );
+  
+  while  (operator_top >= 0 && operator_stack[operator_top].value[0] !=OPAREN && precedence < TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0] ] ) {
+      printf("incoming precedence %d, top precedence %d\n", precedence, TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] );
+      printf("popping operator_top");
     working_top++;
     working_stack[working_top] = operator_stack[operator_top];
     operator_top--;
   }
-  
+  printf("exit pop\n");
   return 0;
   
 }  

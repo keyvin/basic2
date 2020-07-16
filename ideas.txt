@@ -1,3 +1,12 @@
+Obviously there is more to it. line numbers just point to expressions on the stack
+
+line number should point to beginning and end on the stack.
+
+
+
+
+
+
 Ideas 
 
 Keep only two or three working variables alive per interpreter frame. Store results. 
