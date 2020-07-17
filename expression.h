@@ -11,8 +11,11 @@ enum expression_result {SUCCESS, CONTINUE, FINISHED};
 //variable working_v[3];
 token working_stack[MAX_T_STACK];
 token operator_stack[MAX_T_STACK];
+token array_stack[MAX_T_STACK];
 int operator_top;
 int working_top;
+int array_top;
+token control;
 uint8_t pop_operators(uint8_t);
 
 //shunting yard algorithm :)

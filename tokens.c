@@ -58,6 +58,25 @@ uint8_t is_operator(char val)
 }
 */
 
+uint8_t reserved_symbol(token *sym){
+  uint8_t match = 0;
+  for (uint8_t a =0; a < STR_MATCH_NUM; a++){
+    if (strcmp(STR_TO_TOKEN[a], sym->value)==0){
+
+      if (a<3){
+	sym->type = OPERATOR; 
+	sym->value[0] = STR_MATCH[a];
+      }
+      else {
+	sym->type = FLOW;
+	sym->value[0] = STR_MATCH[a];
+      }
+      sym->value[1] = '\0';
+    }
+  }
+  return 0;
+}
+
 //todo Check if int or float contains an E.
 
 //modifies pointer passed in so there is no need to keep track
@@ -68,7 +87,7 @@ void read(char **string, token *token) {
   uint8_t deciread = 0;
   uint8_t eread = 0;
   //advance whitespace
-  if (*ptr == '\0'){
+  if (*ptr == '\0' || *ptr=='\n'){
     token->type = EOL;
     goto EXIT;
   }
@@ -142,9 +161,18 @@ void read(char **string, token *token) {
 	else if (isint)
 	  token->type = INTEGER;
 	else
-	  token->type = SYMBOL;
+	  token->type = SYMBOL;	    	    
+	  
  EXIT:
 	token->value[count] = '\0';
+	if (token->type == SYMBOL){
+	  reserved_symbol(token);
+	  if(*ptr=='('){
+	    token->type = ARRAY;
+	  }
+	      
+	}
+	
 	*string = ptr;
 	return;
  ERROR:
@@ -166,13 +194,20 @@ void dump_token(token to_dump)
   case ERROR:
     printf("ERROR\n");
     break;
+
+  case FLOW:
+    // printf("FLOW Control: %s \n ", to_dump.value);
   case OPERATOR:
-    printf("OPERATOR - %c, PRECEDENCE - %d\n", TOKEN_CHAR[to_dump.value[0]], TOKEN_PRECEDENCE[to_dump.value[0]]);
+    printf("OPERATOR - %s, PRECEDENCE - %d\n", TOKEN_CHAR[to_dump.value[0]], TOKEN_PRECEDENCE[to_dump.value[0]]);
     break;
   case STRING:
     break;
   case INVALID:
     break;
+  case ARRAY:
+    printf("ARRAY OR FUNCTION %s\n", to_dump.value);
+    break;
+      
   default:
     break;
   }
@@ -185,7 +220,7 @@ int main(int argv, char **argc)
 {
 
   char *totoken = "1234.45+64 <> TOTALLY/678-10";
-  char *taktak = "23*12*VAR(6,2,3)-2/2*(12-12)";
+  char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3)*2/2)+SYM3: ELSE X=6+3*(3-4)";
   char *sac = totoken;
   int count = 0;
   token a;
@@ -199,10 +234,21 @@ int main(int argv, char **argc)
     dump_token(working_stack[b]);
   }
   sac = taktak;
-  expression( &sac);
-  printf("stack contents:\n");
-  for (int b=0; b<=working_top; b++){    
-    dump_token(working_stack[b]);
+  while (*sac!='\0') {
+
+    expression(&sac);
+    printf("expression start\n");
+    
+    printf("FLOW CONTROL:\n");
+    dump_token(control);
+
+    
+    
+	
+    printf("stack contents:\n");
+    for (int b=0; b<=working_top; b++){    
+      dump_token(working_stack[b]);
+    }
   }
   return 0;
     

@@ -6,14 +6,18 @@
 
 #define ERROR "error"
 
+
+
 //if token2 is a string, it should have already been read into the string buffer
+
+
 uint8_t  populate_variable(variable *var, token *token1 , token *token2)
 {
   //assume token1 is a variable name. If the last char is $, %, ! or alpha matters. First char of name is type.....
   uint8_t t1_l = strlen(token1->value);
   uint8_t t2_l = srtlen(token2->value);
   char t = '\0';
-  if (token1->type == VARIABLE){
+  if (token1->type == SYMBOL){
     t = token1->value[t1_l];
   }
   switch (t) {

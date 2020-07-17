@@ -5,6 +5,8 @@
 //#include "variables.h"
 #include <stdint.h>
 
+// I may want to actually keep the ) and ( on the stack as they are delimiters. 
+ 
 
 uint8_t expression(char **line)
 {
@@ -13,28 +15,38 @@ uint8_t expression(char **line)
   char *position = *line;
   token next;
   token previous;
-  //avoids extra logic
-  previous.type = SYMBOL;
+  //avoids extra logic 
+ previous.type = SYMBOL;
   read(&position, &next);
-  if (next.type == OPERATOR)
-    goto E_ERROR;
-
+  //if (next.type == OPERATOR)
+  // goto E_ERROR;
+  if (next.type == FLOW)
+    control = next;
   while (next.type != INVALID && next.type != EOL && working_top < MAX_T_STACK) {
-
-       
-    if (next.type == EOL)
+    
+    if (next.type == EOL || next.type == FLOW){      
+      control = next;
+      // printf("%d\n", next.value[0]);
       break;
+    }
+    if (next.type == ARRAY){
+      operator_stack[++operator_top] = next;
+    }
     if (next.type == OPERATOR && next.value[0] == OPAREN){
       operator_top++;
       operator_stack[operator_top] = next;      
     }
     else if(next.type == OPERATOR && next.value[0] == CPAREN) {
       while (operator_stack[operator_top].value[0] != OPAREN && operator_top >= 0){
-	working_top++;
-	working_stack[working_top] = operator_stack[operator_top];
-	operator_top--;	
+
+	working_stack[++working_top] = operator_stack[operator_top--];
+
       }
       operator_top--;
+      if (operator_top >=0 && operator_stack[operator_top].type==ARRAY){
+	working_stack[++working_top] = operator_stack[operator_top--];
+      }
+      
       if (operator_top<-1)
 	goto E_ERROR;
 	     
@@ -76,16 +88,19 @@ uint8_t expression(char **line)
 uint8_t pop_operators(uint8_t precedence)
 {
   
-  printf("incoming precedence %d, top precedence %d\n", precedence, TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] );
+  // printf("incoming precedence %d, top precedence %d\n", precedence, TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] );
   
-  while  (operator_top >= 0 && operator_stack[operator_top].value[0] !=OPAREN && precedence < TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0] ] ) {
-      printf("incoming precedence %d, top precedence %d\n", precedence, TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] );
-      printf("popping operator_top");
-    working_top++;
-    working_stack[working_top] = operator_stack[operator_top];
-    operator_top--;
+  while  (operator_top >= 0 && operator_stack[operator_top].value[0] !=OPAREN && precedence < TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] && operator_stack[operator_top].type == OPERATOR ) {
+    //  printf("incoming precedence %d, top precedence %d\n", precedence, TOKEN_PRECEDENCE[ operator_stack[operator_top].value[0]] );
+    //  printf("popping operator_top");
+
+    working_stack[++working_top] = operator_stack[operator_top--];
+
   }
-  printf("exit pop\n");
-  return 0;
-  
+
+  //  printf("exit pop\n");
+  return 0;  
 }  
+
+//works off of working stack. 
+
