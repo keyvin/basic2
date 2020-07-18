@@ -1,13 +1,13 @@
 #include "expression.h"
 #include "tokens.h"
-
+#include "globals.h"
 #include <stdio.h>
 //#include "variables.h"
 #include <stdint.h>
 
 // I may want to actually keep the ) and ( on the stack as they are delimiters. 
  
-
+//creates an evaluateable stack from an expression.
 uint8_t expression(char **line)
 {
   working_top = -1;
@@ -16,22 +16,26 @@ uint8_t expression(char **line)
   token next;
   token previous;
   //avoids extra logic 
- previous.type = SYMBOL;
+  previous.type = SYMBOL;
+  //read first toke. Verify not an operator.
   read(&position, &next);
-  //if (next.type == OPERATOR)
-  // goto E_ERROR;
+  if (next.type == OPERATOR)
+    goto E_ERROR;
   if (next.type == FLOW)
     control = next;
+  //while we read a valid token, that isn't an end of line. 
   while (next.type != INVALID && next.type != EOL && working_top < MAX_T_STACK) {
     
-    if (next.type == EOL || next.type == FLOW){      
+    if (next.type == EOL || next.type == FLOW || (next.type == OPERATOR && next.value[0]==COLON)){      
       control = next;
       // printf("%d\n", next.value[0]);
       break;
     }
+    //push array token to operator stack - this allows it to appear after any operands.
     if (next.type == ARRAY){
       operator_stack[++operator_top] = next;
     }
+    //handle open parenthesis
     if (next.type == OPERATOR && next.value[0] == OPAREN){
       operator_top++;
       operator_stack[operator_top] = next;      
@@ -55,6 +59,17 @@ uint8_t expression(char **line)
 /*    else if (next.type == OPERATOR && previous.type == OPERATOR && previous.value[0] ==OPAREN)
       goto E_ERROR;
     */
+    //if we have a comma, we need to pop the operator stack, then push comma to the top of the stack
+    //untill we get to an oparen. if no oparen, then it's an error
+    
+    else if (next.type == OPERATOR && next.value[0] == COMMA){
+      while (operator_stack[operator_top].value[0] != OPAREN && operator_top > -1)
+	working_stack[++working_top] = operator_stack[operator_top--];
+      working_stack[++working_top] = next;
+      if (operator_top < -1)
+	goto E_ERROR;
+    }
+    
     else if (next.type == OPERATOR){
 	
       if ( operator_top >= 0 && TOKEN_PRECEDENCE[operator_stack[operator_top].value[0]] > \
@@ -66,7 +81,7 @@ uint8_t expression(char **line)
       operator_stack[operator_top] = next;
     }
     
-    else if (next.type == SYMBOL || next.type == INTEGER || next.type ==FLOAT){
+    else if (next.type == SYMBOL || next.type == INTEGER || next.type ==FLOAT || next.type == STRING){
       working_top++;
       working_stack[working_top] = next;
     }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "tokens.h"
 #include "expression.h"
+#include "globals.h"
 //#include "expressions.h"
 //read token
 
@@ -96,7 +97,6 @@ void read(char **string, token *token) {
   if (*ptr == '"'){
     token->value[0] = '\0';
     token->type = STRING;
-    ptr++;
     goto EXIT;
   }
 
@@ -129,7 +129,7 @@ void read(char **string, token *token) {
   if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.')
     isint = 1;
   //compare start to position to determine lenth until end of string or space
-  while(count < MAX_TOKEN_LENGTH && *ptr != '\0' && *ptr !=' ' && !is_operator(*ptr)){
+  while(count < MAX_TOKEN_LENGTH && *ptr != '\0' && *ptr !=' ' &&  !is_operator(*ptr)){
     
     if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')){
       //error - token started with numeral
@@ -169,10 +169,16 @@ void read(char **string, token *token) {
 	  reserved_symbol(token);
 	  if(*ptr=='('){
 	    token->type = ARRAY;
-	  }
-	      
+	  }	      
 	}
-	
+	if(token->type == STRING){
+	  char *start = string_buffer;
+	  ptr++;
+	  while (*ptr != '"' &&  *ptr!= '\n' && *ptr != '\0')
+	    *(start++)=*(ptr++);	  
+	  *start='\0';
+	  ptr++;
+	}
 	*string = ptr;
 	return;
  ERROR:
@@ -188,7 +194,7 @@ void dump_token(token to_dump)
   case FLOAT:  
   case INTEGER:
   case SYMBOL:
-    printf("SYMBOL - %s\n", to_dump.value);
+    printf("SYMBOL:   %s\n", to_dump.value);
     break;
     
   case ERROR:
@@ -198,16 +204,17 @@ void dump_token(token to_dump)
   case FLOW:
     // printf("FLOW Control: %s \n ", to_dump.value);
   case OPERATOR:
-    printf("OPERATOR - %s, PRECEDENCE - %d\n", TOKEN_CHAR[to_dump.value[0]], TOKEN_PRECEDENCE[to_dump.value[0]]);
+    printf("OPERATOR: %s, PRECEDENCE - %d\n", TOKEN_CHAR[to_dump.value[0]], TOKEN_PRECEDENCE[to_dump.value[0]]);
     break;
   case STRING:
+    printf("STRING BUFFER %s\n", string_buffer);
     break;
   case INVALID:
     break;
   case ARRAY:
     printf("ARRAY OR FUNCTION %s\n", to_dump.value);
     break;
-      
+    
   default:
     break;
   }
@@ -220,7 +227,8 @@ int main(int argv, char **argc)
 {
 
   char *totoken = "1234.45+64 <> TOTALLY/678-10";
-  char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3)*2/2)+SYM3: ELSE X=6+3*(3-4)";
+ char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3, fun4(4+5), 2+3*4)*2+2)+SYM3: ELSE X=6+3*(3-4):x$=\"hello world\"";
+  // char *taktak = "X$=\"hello world\"\n";
   char *sac = totoken;
   int count = 0;
   token a;
@@ -234,8 +242,8 @@ int main(int argv, char **argc)
     dump_token(working_stack[b]);
   }
   sac = taktak;
-  while (*sac!='\0') {
-
+  while (*sac!='\0' && *sac !='\n') {
+    //printf("SAC%s\n", sac);
     expression(&sac);
     printf("expression start\n");
     
@@ -243,8 +251,7 @@ int main(int argv, char **argc)
     dump_token(control);
 
     
-    
-	
+    	
     printf("stack contents:\n");
     for (int b=0; b<=working_top; b++){    
       dump_token(working_stack[b]);

@@ -49,21 +49,13 @@ static int TOKEN_PRECEDENCE[MAX_TOKENS] = {0,1,1,2,2,3,4,4,0,0,0,5,5,5,0,0,0,0,0
 
 enum t_type {SYMBOL, INTEGER, FLOAT, ERROR, OPERATOR, STRING, EOL, INVALID, DOUBLE, ARRAY, FLOW, FUNCTION};
 
-enum var_types { I, S, D, STR, IA, SA, DA, STRA, INV};
 
-typedef union VALUE {
-  int intg;
-  float sing;
-  double dubl;
-  char *str;
-  void *array;
-} value;
+
 
 
 typedef struct TOKEN {
   char value[MAX_TOKEN_LENGTH];
   enum t_type type;
-  value v;
 } token;
 
 token buffer;
