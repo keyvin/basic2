@@ -59,6 +59,17 @@ uint8_t is_operator(char val)
 }
 */
 
+//is this a function?
+uint8_t is_function(char *value){
+  for (int i = 0; i < NUM_FUNCTIONS; i++){
+    if (strcmp(value, FUNCTION_MATCH[i])==0)
+      return i+1;
+  }
+  return 0;
+
+}
+
+//reserved (multi char symbol?)
 uint8_t reserved_symbol(token *sym){
   uint8_t match = 0;
   for (uint8_t a =0; a < STR_MATCH_NUM; a++){
@@ -87,13 +98,15 @@ void read(char **string, token *token) {
   uint8_t isint = 0;
   uint8_t deciread = 0;
   uint8_t eread = 0;
-  //advance whitespace
+  //Return an end of line 
   if (*ptr == '\0' || *ptr=='\n'){
     token->type = EOL;
     goto EXIT;
   }
+  //chomp white space
   while (*ptr == ' ')
     ptr++;
+  //read string
   if (*ptr == '"'){
     token->value[0] = '\0';
     token->type = STRING;
@@ -169,6 +182,12 @@ void read(char **string, token *token) {
 	  reserved_symbol(token);
 	  if(*ptr=='('){
 	    token->type = ARRAY;
+
+	    if (isint = is_function(token->value)){
+	      token->type = FUNCTION;
+	      token->value[0] = isint-1;
+	    }
+	      
 	  }	      
 	}
 	if(token->type == STRING){

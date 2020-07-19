@@ -5,7 +5,7 @@
 #define TOKEN_ERROR_1 "INVALID TOKEN"
 #define MAX_TOKEN_LENGTH 20
 #define MAX_STRING 128
-#define MAX_TOKENS 27
+#define MAX_TOKENS 28
 
 #define PLUS 1
 #define MINUS 2
@@ -34,14 +34,18 @@
 #define ELSE 25
 #define GOTO 26
 #define GOSUB 27
+#define PRINT 28
 
 #define FLOW_START 20
 
-#define STR_MATCH_NUM 11
+#define STR_MATCH_NUM 12
 
-static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "ELSE", "FOR", "NEXT", "TO", "GOTO", "GOSUB"};
+static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "ELSE", "FOR", "NEXT", "TO", "GOTO", "GOSUB", "PRINT"};
 
 static int STR_MATCH[] = {AND,OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, ELSE, GOTO, GOSUB};
+
+#define NUM_FUNCTIONS 11
+static char *FUNCTION_MATCH[] = {"PEEK", "POKE", "STR$", "COS", "SIN", "TAN", "LEN", "RND", "LEFT$", "RIGHT$", "CHR$"};
 
 static char *TOKEN_CHAR[] = {'\0', "+", "-", "/", "*", "^", "(", ")", ",", ";", ":","AND", "OR", "NOT", ">", "<" , ">=", "<=", "<>", "=", "IF", "THEN", "FOR", "NEXT", "TO", "ELSE"};
 

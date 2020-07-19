@@ -2,6 +2,8 @@
 #include "tokens.h"
 #include "expression.h"
 
+// I think I can safely get rid of type and value...
+
 //state machine: Line number
 //first expression
      // expression - read next, no longer first expression
@@ -28,15 +30,10 @@ int is_operand(token *t){
   return 0;
 }
 
-void to_var(variable *v,token *t)
-{
-  
-
-
 }
 
-variable v_stack[25];
-
+variable v_stack[10];
+int v_top;
 
 //we use working and operator stack....
 variable  evaluate(){
@@ -44,17 +41,35 @@ variable  evaluate(){
   calc_top = -1;
   
   for (int i = 0; i <= working_top; i++){
-    if (working_stack[i].type == operator){
-      
-      //if we can perform an operation, do so.      
-      if ( > 1 && is_operand(&(operator_stack[calc_top])) && is_operand(&operator_stack[calc_top-1])) {
-	calc_top = calc_top - 2;
-	create_anon_var(&v_stack[++v_top], &operator_stack[calc_top]);
-	create_anon_var(&v_stack[++v_top], &operator_stack[calc_top-1]);
-	v_stack[v_top--] = operation(token->value[0], v_stack[v_top], v_stack[v_top-1]);	  
+
+    //need to handle the case of an equals being the final operator. Comparison if IF is set, assignment otherwise.
+  
+      //all commas must be in parens. When we get to a function or array lookup, we pop the arguments off in reverse order!
+      if(working_stack[i].type == OPERATOR && working_stack[i].value[0] == COMMA){
+	v_top++;
       }
-    }
-      
-    }
+      else if(working_stack[i].type == ARRAY){
+	//assume single dimension for now.
+	v_top--;
+	v_stack[v_top].type = I;
+	v_stack[v_top].value.intg =22;
+      }
+      else if(working_stack[i].type == FUNCTION) {
+	//get the number of arguments.
+	//is the variable stack high enough
+	//arguments are popped in reverse order
+	
+      }
+      else if (working_stack[i].type == SYMBOL) {
+	//fetch value, place on variable stack
+      }
+
+      else if (working_stack[i].type == INTEGER || working_stack[i].type == FLOAT || working_stack[i].type == STRING || working_stack[i].type == DOUBLE){
+	//convert and put on the stack.
+      }
+	
   }
+      
+
+}
   
