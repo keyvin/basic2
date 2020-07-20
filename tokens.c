@@ -13,6 +13,7 @@
 //the ; tells print to omit a new line
 uint8_t expression(char **);
 variable evaluate();
+unsigned int execute_line(char *);
 
 uint8_t is_operator(char val)
 {
@@ -85,6 +86,7 @@ uint8_t reserved_symbol(token *sym){
 	sym->value[0] = STR_MATCH[a];
       }
       sym->value[1] = '\0';
+      return 0;
     }
   }
   return 0;
@@ -180,7 +182,7 @@ void read(char **string, token *token) {
  EXIT:
 	token->value[count] = '\0';
 	if (token->type == SYMBOL){
-	  reserved_symbol(token);
+	  reserved_symbol(token);	  
 	  if(*ptr=='('){
 	    token->type = ARRAY;
 
@@ -207,6 +209,7 @@ void read(char **string, token *token) {
 	return;
 }
     
+
 void dump_token(token to_dump)
 {
 
@@ -242,28 +245,36 @@ void dump_token(token to_dump)
 }    
 
 
-
-int main(int argv, char **argc)
-{
-
-  char *totoken = "0";
-  //char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3, fun4(4+5), 2+3*4)*2+2)+SYM3: ELSE X=6+3*(3-4):x$=\"hello world\"";
-  char *taktak = "5+4*(3*2)/2";
-  char *sac = totoken;
-  int count = 0;
-  token a;
-  read(&sac, &a);
-  
-
-  sac = totoken;
-  expression( &sac );
-
+void dump_stack(){
   printf("stack contents:\n");
   for (int b=0; b<=working_top; b++){    
     dump_token(working_stack[b]);
   }
+}
+  
+
+int main(int argv, char **argc)
+{
+
+  //  char *totoken = "0";
+  //char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3, fun4(4+5), 2+3*4)*2+2)+SYM3: ELSE X=6+3*(3-4):x$=\"hello world\"";
+  char *taktak = "DIM X(3,4,5):DIM Z(2, 2): X(1*4,2,3)=5+4*(3*2)/2:Y=5+X(X(3,3,3),X(2,2*Z(1,2),2),1)";
+  char *sac ;
+  // int count = 0;
+  // token a;
+  //  read(&sac, &a);
+  
+
+  //  sac = totoken;
+  // expression( &sac );
+
+  //  printf("stack contents:\n");
+  //  for (int b=0; b<=working_top; b++){    
+  //    dump_token(working_stack[b]);
+  //  }
   sac = taktak;
-  while (*sac!='\0' && *sac !='\n') {
+  execute_line(sac);
+  /*  while (*sac!='\0' && *sac !='\n') {
     //printf("SAC%s\n", sac);
     expression(&sac);
     variable d = evaluate();
@@ -274,11 +285,8 @@ int main(int argv, char **argc)
 
     
     	
-    printf("stack contents:\n");
-    for (int b=0; b<=working_top; b++){    
-      dump_token(working_stack[b]);
-    }
   }
+  */
   return 0;
     
 }

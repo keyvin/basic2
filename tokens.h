@@ -5,7 +5,7 @@
 #define TOKEN_ERROR_1 "INVALID TOKEN"
 #define MAX_TOKEN_LENGTH 20
 #define MAX_STRING 128
-#define MAX_TOKENS 28
+#define MAX_TOKENS 29
 
 #define PLUS 1
 #define MINUS 2
@@ -35,25 +35,27 @@
 #define GOTO 26
 #define GOSUB 27
 #define PRINT 28
+#define DIM 29
 
 #define FLOW_START 20
 
-#define STR_MATCH_NUM 12
+#define STR_MATCH_NUM 13
 
-static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "ELSE", "FOR", "NEXT", "TO", "GOTO", "GOSUB", "PRINT"};
+static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "ELSE", "FOR", "NEXT", "TO", "GOTO", "GOSUB", "PRINT", "DIM"};
 
-static int STR_MATCH[] = {AND,OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, ELSE, GOTO, GOSUB};
+static int STR_MATCH[] = {AND, OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, GOTO, GOSUB, PRINT, DIM};
 
 #define NUM_FUNCTIONS 11
 static char *FUNCTION_MATCH[] = {"PEEK", "POKE", "STR$", "COS", "SIN", "TAN", "LEN", "RND", "LEFT$", "RIGHT$", "CHR$"};
 
-static char *TOKEN_CHAR[] = {'\0', "+", "-", "/", "*", "^", "(", ")", ",", ";", ":","AND", "OR", "NOT", ">", "<" , ">=", "<=", "<>", "=", "IF", "THEN", "FOR", "NEXT", "TO", "ELSE"};
+static char *TOKEN_CHAR[] = {'\0', "+", "-", "/", "*", "^", "(", ")", ",", ";", ":","AND", "OR", "NOT", ">", "<" , ">=", "<=", "<>", "=", "IF", "THEN", "FOR", "NEXT", "TO", "ELSE", "NEXT", "TO","ELSE", "GOTO","GOSUB","PRINT","DIM"};
 
 static int TOKEN_PRECEDENCE[MAX_TOKENS] = {0,1,1,2,2,3,4,4,0,0,0,5,5,5,0,0,0,0,0, 0, 5, 5, 5, 5, 5};
 
 enum t_type {SYMBOL, INTEGER, FLOAT, ERROR, OPERATOR, STRING, EOL, INVALID, DOUBLE, ARRAY, FLOW, FUNCTION};
 
 
+void dump_stack();
 
 
 //this could just be start and stop data in the program input!!!!

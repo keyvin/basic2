@@ -15,6 +15,7 @@ int operator_top;
 int working_top;
 token control;
 uint8_t pop_operators(uint8_t);
+uint8_t expression(char **);
 
 //shunting yard algorithm :)
 //only need one - 

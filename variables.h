@@ -11,19 +11,28 @@
 
 //First char of varname is type (i, s, 
 
-enum var_types { F, I, S, D, STR, IA, SA, DA, STRA, INV};
+enum var_types { F, I, S, D, STR, IA, SA, DA, STRA, FV,INV};
 
 typedef struct STRING {
   char *ptr;
   int length;
 } string;
 
+//can use more restrictive type later. could contain pointer to line no
+typedef struct FOR_VAR {
+  int value;
+  int stop;
+  int step;
+} for_var;
+
+//value is *ALWAYS* an integer for arrays. After dimming, they live somewhere else. This value is used
+//for lookup and setting.
 typedef union VALUE {
   int intg;
   float sing;
   double dubl;
   string str;
-  void *array;
+  for_var fvar;
 } value;
 
 
@@ -48,15 +57,19 @@ unsigned int num_vars;
 
 //void free_variable(variable *);
 void free_variable(int);
-int  find_variable(int);
+//int  find_variable(int);
 
 int read_int(char *);
 double read_double(char *);
 float read_float(char *);
 
-//int find_variable_index(char *);
+variable *find_variable(char *);
+variable *set_variable(char *, variable *);
+
 //variable * find_variable(char *);
 int get_int__value(char *);
+int get_array_dims(char *);
+void put_array_value_in_var(variable *, char *);
 float get_float_value(char *);
 double get_double_value(char *);
 void put_string_in_buffer(char *);
@@ -64,7 +77,6 @@ void append_string_to_buffer(char *);
 void free_by_name(char *);
 void free_by_number(int);	 		 
 uint8_t populate_variable(variable *, token *, token *);
-  
 void read_anonymous_variable(variable *, token *);
 
 #endif

@@ -17,7 +17,7 @@ uint8_t expression(char **line)
   token previous;
   //avoids extra logic 
   previous.type = SYMBOL;
-  //read first toke. Verify not an operator.
+  //read first token. Verify not an operator.
   read(&position, &next);
   if (next.type == OPERATOR)
     goto E_ERROR;
@@ -31,6 +31,12 @@ uint8_t expression(char **line)
       // printf("%d\n", next.value[0]);
       break;
     }
+    //assignment
+    if(next.type == OPERATOR && next.value[0]==EQ && EQ_SWITCH==ASSIGNMENT){
+      control = next;
+      break;
+    }
+      
     //push array token to operator stack - this allows it to appear after any operands.
     if (next.type == ARRAY){
       operator_stack[++operator_top] = next;
