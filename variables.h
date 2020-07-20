@@ -11,7 +11,7 @@
 
 //First char of varname is type (i, s, 
 
-enum var_types { I, S, D, STR, IA, SA, DA, STRA, INV};
+enum var_types { F, I, S, D, STR, IA, SA, DA, STRA, INV};
 
 typedef struct STRING {
   char *ptr;
@@ -22,7 +22,7 @@ typedef union VALUE {
   int intg;
   float sing;
   double dubl;
-  string s;
+  string str;
   void *array;
 } value;
 
@@ -50,6 +50,10 @@ unsigned int num_vars;
 void free_variable(int);
 int  find_variable(int);
 
+int read_int(char *);
+double read_double(char *);
+float read_float(char *);
+
 //int find_variable_index(char *);
 //variable * find_variable(char *);
 int get_int__value(char *);
@@ -59,8 +63,8 @@ void put_string_in_buffer(char *);
 void append_string_to_buffer(char *);
 void free_by_name(char *);
 void free_by_number(int);	 		 
-void populate_variable(variable *, token *, token *);
+uint8_t populate_variable(variable *, token *, token *);
   
-
+void read_anonymous_variable(variable *, token *);
 
 #endif

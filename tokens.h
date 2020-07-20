@@ -56,7 +56,9 @@ enum t_type {SYMBOL, INTEGER, FLOAT, ERROR, OPERATOR, STRING, EOL, INVALID, DOUB
 
 
 
-
+//this could just be start and stop data in the program input!!!!
+//for instance
+//char *start, int length. use strncmp!
 typedef struct TOKEN {
   char value[MAX_TOKEN_LENGTH];
   enum t_type type;

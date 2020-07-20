@@ -12,6 +12,7 @@
 //the : operator combines statements into a single line-num
 //the ; tells print to omit a new line
 uint8_t expression(char **);
+variable evaluate();
 
 uint8_t is_operator(char val)
 {
@@ -245,9 +246,9 @@ void dump_token(token to_dump)
 int main(int argv, char **argc)
 {
 
-  char *totoken = "1234.45+64 <> TOTALLY/678-10";
- char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3, fun4(4+5), 2+3*4)*2+2)+SYM3: ELSE X=6+3*(3-4):x$=\"hello world\"";
-  // char *taktak = "X$=\"hello world\"\n";
+  char *totoken = "0";
+  //char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3, fun4(4+5), 2+3*4)*2+2)+SYM3: ELSE X=6+3*(3-4):x$=\"hello world\"";
+  char *taktak = "5+4*(3*2)/2";
   char *sac = totoken;
   int count = 0;
   token a;
@@ -256,6 +257,7 @@ int main(int argv, char **argc)
 
   sac = totoken;
   expression( &sac );
+
   printf("stack contents:\n");
   for (int b=0; b<=working_top; b++){    
     dump_token(working_stack[b]);
@@ -264,6 +266,7 @@ int main(int argv, char **argc)
   while (*sac!='\0' && *sac !='\n') {
     //printf("SAC%s\n", sac);
     expression(&sac);
+    variable d = evaluate();
     printf("expression start\n");
     
     printf("FLOW CONTROL:\n");
