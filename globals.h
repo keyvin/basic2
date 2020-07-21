@@ -17,6 +17,10 @@ enum interpreter_state {IN_IF, IN_DIM, IN_FOR, TO_ELSE, TO_END, REGULAR};
 enum eq_switch {ASSIGNMENT, NON_ASSIGNMENT};
 enum eq_switch EQ_SWITCH;
 enum interpreter_state GLOBAL_STATE;
+variable evaluate();
+unsigned int execute_line(char *);
+void dump_token(token );
+
 
 variable v_stack[10];
 int v_top;

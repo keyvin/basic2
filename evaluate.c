@@ -35,6 +35,7 @@ int is_operand(token *t){
 
 
 //what to do about not. write to stack with low or high precedence?
+//Not all operators decrement stack....
 void do_operator(uint8_t t)
 {
   double accum = 0;
@@ -55,43 +56,43 @@ void do_operator(uint8_t t)
   switch (t){
 		
   case PLUS:
-    v_stack[v_top-1].value.sing = accum2 + accum;
+    v_stack[--v_top].value.sing = accum2 + accum;
     break;
   case MINUS:
-    v_stack[v_top-1].value.sing = accum2 - accum;
+    v_stack[--v_top].value.sing = accum2 - accum;
     break;
   case MULTIPLY:
-    v_stack[v_top-1].value.sing = accum2 * accum;
+    v_stack[--v_top].value.sing = accum2 * accum;
     break;
   case DIVIDE:
-    v_stack[v_top-1].value.sing = accum2 / accum;
+    v_stack[--v_top].value.sing = accum2 / accum;
     break;
   case POWER:
-    v_stack[v_top-1].value.sing = 7007;
+    v_stack[--v_top].value.sing = 7007;
     break;
   case AND:
-    v_stack[v_top-1].value.sing = (accum && accum2) ? 1: 0;
+    v_stack[--v_top].value.sing = (accum && accum2) ? 1: 0;
     break;
   case OR:
-    v_stack[v_top-1].value.sing = (accum || accum2) ? 1:0;
+    v_stack[--v_top].value.sing = (accum || accum2) ? 1:0;
     break;
   case GT:
-    v_stack[v_top-1].value.sing = (accum < accum2) ? 1:0;
+    v_stack[--v_top].value.sing = (accum < accum2) ? 1:0;
     break;
   case LT:
-    v_stack[v_top-1].value.sing = (accum > accum2) ? 1:0;
+    v_stack[--v_top].value.sing = (accum > accum2) ? 1:0;
   case GTE:
-    v_stack[v_top-1].value.sing = (accum <= accum2) ? 1:0;
+    v_stack[--v_top].value.sing = (accum <= accum2) ? 1:0;
     break;
   case NOT_EQ:
-    v_stack[v_top-1].value.sing = (accum != accum2) ? 1:0;
+    v_stack[--v_top].value.sing = (accum != accum2) ? 1:0;
     break;
   case EQ:
-    v_stack[v_top-1].value.sing = (accum==accum2) ? 1:0;
+    v_stack[--v_top].value.sing = (accum==accum2) ? 1:0;
   default:
     break;
   }
-  v_top--;
+
   
 }
 
@@ -126,51 +127,54 @@ variable  evaluate(){
       //create or access?
       
       if (GLOBAL_STATE==IN_DIM){
-	//top of the stack is number of dimensions. just under will be total elements
-	//dim anywhere in an expression other than start is an error.
-	//calculate total size,
-	
-	for (int ic = 0; ic < comma_count; ic++)
-	  do_operator(MULTIPLY);
-	v_top++;
-	v_stack[v_top].value.intg = comma_count+1;
-	v_stack[v_top].name[0] = '\0';	
-	return v_stack[v_top];
+        //top of the stack is number of dimensions. just under will be total elements
+        //dim anywhere in an expression other than start is an error.
+        //calculate total size,
+        //comma count is bullshit
+        for (int ic = 0; ic < v_top; ic++)
+          do_operator(MULTIPLY);
+        v_top++;
+        v_stack[v_top].type = I;
+        v_stack[v_top].value.intg = comma_count;
+        v_stack[v_top].name[0] = '\0';
+        return v_stack[v_top];
       }
 
       //special code for array assignments. Just sets zero.
       else if (GLOBAL_STATE==ASSIGNMENT){
-	//will be an error, undimmed array.
-	int num = get_array_dims(working_stack[i].value);
-	//	if (num !=comma_count+1)
-	//printf("Error: Undimmed or assignment to invalid subscript\n");
-	for (int ic = 0; ic < num-1; ic++)
-	  do_operator(MULTIPLY);
-	if (v_stack[v_top].type !=I)
-	  v_stack[v_top].value.intg = (int) v_stack[v_top].value.sing;
-	strcpy(v_stack[v_top].name, working_stack[i].value);
-	return(v_stack[v_top]);
-      }      
+        //will be an error, undimmed array.
+        int num = get_array_dims(working_stack[i].value);
+        //	if (num !=comma_count+1)
+        //printf("Error: Undimmed or assignment to invalid subscript\n");
+        for (int ic = 0; ic < num-1; ic++)
+          do_operator(MULTIPLY);
+        if (v_stack[v_top].type !=I)
+          v_stack[v_top].value.intg = (int) v_stack[v_top].value.sing;
+        strcpy(v_stack[v_top].name, working_stack[i].value);
+        return(v_stack[v_top]);
+      }
       int num = get_array_dims(working_stack[i].value);
-      //verfiy comma count
-      
-      //might want to verify integer type...
-      //if (comma_count != num-1)
-	//printf("INVALID SUBSCRIPT ERROR\n");
-      for (int ic = 0; ic < num-1; ic++)
-	do_operator(MULTIPLY);
+          //verfiy comma count
+
+          //might want to verify integer type...
+          //if (comma_count != num-1)
+        //printf("INVALID SUBSCRIPT ERROR\n");
+
+
+      for (int ic = 0; ic < num; ic++)
+        do_operator(MULTIPLY);
       //      if (v_stack[v_top].type !=I)
       //	v_stack[v_top].value.intg = (int) v_stack[v_top].value.sing;
       //strcpy(v_stack[v_top].name, working_stack[working_top].value);
-      if (working_stack[i].type == STRING) {
-	//TODO put string array in working buffer at offset
+     if (working_stack[i].type == STRING) {
+        //TODO put string array in working buffer at offset
 	
       }
       else{
-	printf("Array value %f calculated\n", v_stack[v_top].value.sing);
-	//put_array_value_in_var(&v_stack[v_top], working_stack[working_top].value) ;
+        printf("Array value %f calculated\n", v_stack[v_top].value.sing);
+        //put_array_value_in_var(&v_stack[v_top], working_stack[working_top].value) ;
       }
-      //comma_count=0;
+        //comma_count=0;
       
 	  
       //assume single dimension for now.

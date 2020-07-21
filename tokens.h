@@ -72,5 +72,5 @@ char read_buffer[MAX_STRING];
 
 uint8_t is_operator(char);
 void read(char **, token *);			  
-
+void dump_stack();
 #endif

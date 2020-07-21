@@ -17,7 +17,7 @@
 int get_array_dims(char *to_find)
 {
   for (int i = 0; i< MAX_VARS; i++){
-    if(strcmp(vars[i].name, to_find)){
+    if(strcmp(vars[i].name, to_find)==0){
       return vars[i].value.intg;
       break;
     }
@@ -73,6 +73,7 @@ variable * set_variable(char *to_set, variable *var)
     }
     else {
       vars[offset] = *var;
+      strcpy(vars[offset].name, to_set);
       return &vars[offset];
     }
     num_vars++;

@@ -7,11 +7,11 @@
                  attribute="Interfaces"
                  value="IAnjutaProjectManager"/>
 	</plugin>
-	<plugin name= "Directory backend"
+	<plugin name= "Makefile backend"
             mandatory="yes">
          <require group="Anjuta Plugin"
                   attribute="Location"
-                  value="dir-project:DirProjectPlugin"/>
+                  value="mk-project:MkpPlugin"/>
          <require group="Anjuta Plugin"
                   attribute="Interfaces"
                   value="IAnjutaProjectBackend"/>
