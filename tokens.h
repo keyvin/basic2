@@ -36,6 +36,17 @@
 #define GOSUB 27
 #define PRINT 28
 #define DIM 29
+#define COS 30
+#define SIN 31
+#define TAN 32
+#define LEN 33
+#define CHR 34    //built in functions
+#define STR 35
+#define LEFT 36
+#define RIGHT 37
+#define MID 38
+
+
 
 #define FLOW_START 20
 
@@ -46,7 +57,7 @@ static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "
 static int STR_MATCH[] = {AND, OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, GOTO, GOSUB, PRINT, DIM};
 
 #define NUM_FUNCTIONS 11
-static char *FUNCTION_MATCH[] = {"PEEK", "POKE", "STR$", "COS", "SIN", "TAN", "LEN", "RND", "LEFT$", "RIGHT$", "CHR$"};
+static char *FUNCTION_MATCH[] = {"COS", "SIN", "TAN", "LEN", "RND", "LEFT$", "RIGHT$", "CHR$"};
 
 static char *TOKEN_CHAR[] = {'\0', "+", "-", "/", "*", "^", "(", ")", ",", ";", ":","AND", "OR", "NOT", ">", "<" , ">=", "<=", "<>", "=", "IF", "THEN", "FOR", "NEXT", "TO", "ELSE", "NEXT", "TO","ELSE", "GOTO","GOSUB","PRINT","DIM"};
 
