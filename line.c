@@ -14,20 +14,52 @@ unsigned int execute_line(char *line_text)
   token t1;
   char *current;
   char *previous;
+  int if_counter=0;
   EQ_SWITCH = ASSIGNMENT;
   current=previous=line_text;
   //will set control to next....
   expression(&current);
   while(control.type != EOL && control.type != ERROR && *current!='\0'){    
+
     if (control.type == FLOW && control.value[0]==IF){
       EQ_SWITCH=REGULAR;
+      expression(&current);
+      dump_stack();
+      evaluate();
+      printf("Value of if expression: %f", v_stack[v_top].value.sing);
+      if (control.type == FLOW && control.value[0]==THEN) {
+	//logical true - we don't need to do anything.
+	if (v_stack[v_top].value.sing != 0){
+	  
+	}
+	else {
+	  // read tokens until we get to newline, or else.
+	  int if_counter=0;
+	  token find_if;
+
+
+	  //we break when we find a matching else, or we fall of the line
+	  while (1){
+	    read(&current, &find_if);
+	    if (find_if.type == FLOW && find_if.value[0]==IF)
+	      if_counter++;
+	    if (find_if.type == FLOW && find_if.value[0]==ELSE){
+	      if (if_counter >0) if_counter--;
+	      else {
+		break;
+	      }	     	      
+	    }
+	    if(control.type == EOL)
+	      break;	    	   	 	  	    
+	  }
+	  
+	}
+	
+      }
     }
-      
-    //seek until end of line or else
-    if (control.type == FLOW && control.value[0]==THEN) { }
-    //seek until EOL, or just continue execution...
-    if (control.type == FLOW && control.value[0]==ELSE){ }
-    //treat first = as a statement break in read (assignment)
+    if (control.type == FLOW && control.value[0] == ELSE)
+      return 0;
+            
     if (control.type == FLOW && control.value[0] == FOR) { }
     //assignment. Set up stack. Get PTR to read/write address
     if (control.type == FLOW && control.value[0] == DIM) {
@@ -90,7 +122,7 @@ unsigned int execute_line(char *line_text)
       //do assignment
     }
     if(control.type == OPERATOR && control.value[0]==COLON){
-
+      //ends statements. Not appearing before a then for instance, is an error.
     }
     GLOBAL_STATE=REGULAR;
     EQ_SWITCH=ASSIGNMENT;

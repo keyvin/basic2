@@ -11,7 +11,7 @@
 
 //First char of varname is type (i, s, 
 
-enum var_types { F, I, S, D, STR, IA, SA, DA, STRA, FV,INV};
+enum var_types { F, I, S, D, STRV, IA, SA, DA, STRA, FV,INV};
 
 typedef struct STRING {
   char *ptr;
