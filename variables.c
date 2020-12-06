@@ -14,24 +14,84 @@
 //anon strings just use string buffer till assignment.
 
 
-int get_array_dims(char *to_find)
+/*int get_array_dims(char *to_find)
 {
   for (int i = 0; i< MAX_VARS; i++){
     if(strcmp(vars[i].name, to_find)==0){
       return vars[i].value.intg;
       break;
-    }
-    
+    }    
   }      
   return 0;
+}*/
+
+//uint8_t dim_array(variable *location, token *name, unsigned int size);
+//uint8_t get_val_from_array(variable *result, char *name, unsigned int offset);
+//uint8_t set_val_in_array(variable *value, char *name, unsigned int offset);
+//FV is for value
+//enum var_types { F, I, S, D, STRV, IA, SA, DA, STRA, FV,INV};
+
+void check_copy_name(char *dest, char *name){
+  int name_length = strlen(name);
+  if (name > MAX_VAR_NAME){
+    //error
+  }
+  if (name_length == 0) {
+    //error
+  }
+  strncpy(dest, name, name_length);
+  dest[name_length+1] = '\0';
 }
 
-void put_array_value_in_var(variable *a, char *b)
+uint8_t dim_array(variable *location, token *name, unsigned int size, var_types type){
+  location->type = type;
+  int bytes;
+  switch (type){
+  case FA:
+    bytes = sizeof(float)*size;
+  case IA:
+    bytes = sizeof(int)*size;
+    break;
+  case SA:
+    bytes = sizeof(string)*size;
+    break;
+  case DA:
+    bytes = sizeof(double)*size;
+    break;
+  default:
+    //else error
+  };   
+  location->ary->ptr = (void *) malloc(bytes);
+  //if a string,
+  //more work?
+  
+  check_copy_name(dest->name, token->value);
+  return;
+  
+}
+
+/*void put_array_value_in_var(variable *a, char *b)
 {
   a->type = F;
   a->value.sing = 0.0;
-}
+  }*/
 
+//call get variable first - should look like (&var_from, int offset, &var_to)
+// set global error state to out of bounds and return 0.
+uint8_t get_variable_from_array_into(variable *ar, int index,  variable *target){  
+  switch (ar->type){
+    case IA:
+      break;
+    case FA:
+      break;
+    case SA:
+      break;
+    case DA:
+      break;
+    default:
+  }
+  
+}
   
 variable * find_variable(char *to_find)
 {
@@ -142,6 +202,7 @@ uint8_t  populate_variable(variable *var, token *token1 , token *token2)
       
   return 1;
 }
+
 /*replace with my own*/
 float read_float(char *s)
 {

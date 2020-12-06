@@ -13,6 +13,11 @@
 
 enum var_types { F, I, S, D, STRV, IA, SA, DA, STRA, FV,INV};
 
+typedef struct ARRAY {
+  void *ptr;
+  unsigned int len;
+} array;
+
 typedef struct STRING {
   char *ptr;
   int length;
@@ -28,6 +33,7 @@ typedef struct FOR_VAR {
 //value is *ALWAYS* an integer for arrays. After dimming, they live somewhere else. This value is used
 //for lookup and setting.
 typedef union VALUE {
+  array *ary;
   int intg;
   float sing;
   double dubl;
@@ -54,7 +60,7 @@ char string_area[64000];
 variable vars[256];
 unsigned int num_vars;
 
-
+void free_variable(variable *);
 //void free_variable(variable *);
 void free_variable(int);
 //int  find_variable(int);
@@ -77,6 +83,9 @@ void append_string_to_buffer(char *);
 void free_by_name(char *);
 void free_by_number(int);	 		 
 uint8_t populate_variable(variable *, token *, token *);
+uint8_t dim_array(variable *location, token *name, unsigned int size);
+uint8_t get_val_from_array(variable *result, char *name, unsigned int offset);
+uint8_t set_val_in_array(variable *value, char *name, unsigned int offset);
 void read_anonymous_variable(variable *, token *);
 
 #endif
