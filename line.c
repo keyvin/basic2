@@ -24,7 +24,7 @@ unsigned int execute_line(char *line_text)
     if (control.type == FLOW && control.value[0]==IF){
       EQ_SWITCH=REGULAR;
       expression(&current);
-      dump_stack();
+      //      dump_stack();
       evaluate();
       printf("Value of if expression: %f", v_stack[v_top].value.sing);
       if (control.type == FLOW && control.value[0]==THEN) {
@@ -65,11 +65,21 @@ unsigned int execute_line(char *line_text)
     if (control.type == FLOW && control.value[0] == DIM) {
       GLOBAL_STATE=IN_DIM;
       expression(&current);
-      dump_stack();
+      // dump_stack();
       evaluate();
-      printf("ARRAY DIMMED %s, %d\n", working_stack[working_top].value, v_stack[v_top].value.intg);
-      printf("NUMBER OF ELEMENTS: %f\n", v_stack[v_top-1].value.sing);      
-      set_variable(working_stack[working_top].value, &v_stack[v_top]);     
+      //set_variable(working_stack[working_top].value, &v_stack[v_top]);
+      convert_stack_to_int_below_n(v_top);
+      //check error
+      unsigned int array_size = calculate_array_size();
+      dim_array(&working_stack[working_top], array_size, v_top+1);
+      printf("ARRAY DIMMED %s, %d dimensions\n", working_stack[working_top].value, v_top+1);
+      printf("NUMBER OF ELEMENTS: %d\n", array_size);      
+      printf("Dimension values: ");
+      for (int a = v_top; a >= 0; a--){
+	set_dimension_n(working_stack[working_top].value, a, v_stack[a].value.intg);
+	printf("%d   ", v_stack[a].value.intg);
+      }
+      printf("\n");
     }
   
   
@@ -78,28 +88,28 @@ unsigned int execute_line(char *line_text)
       //single symbol.
     GLOBAL_STATE = ASSIGNMENT;
     if (working_top == 0){
-
-	token t1 = working_stack[0];
-	
+	token t1 = working_stack[0];	
 	EQ_SWITCH = REGULAR;
 	GLOBAL_STATE = REGULAR;
 	expression(&current);
-	dump_stack();
+	//	dump_stack();
 	evaluate();
-	printf("VARIABLE ASSIGNMENT: %s - %f", t1.value, v_stack[v_top].value.sing);
+	printf("VARIABLE ASSIGNMENT: %s - %f", t1.value, v_stack[v_top].type == F?v_stack[v_top].value.sing:(float)v_stack[v_top].value.intg);
+	printf("v_top:%d\n, v_type:%d\n", v_top, t1.type);
 	set_variable(t1.value, &v_stack[v_top]);
       }
       else {
 	token t1 = working_stack[working_top];	
-	dump_stack();
+	//	dump_stack();
 	evaluate();
 	EQ_SWITCH = REGULAR;
 	GLOBAL_STATE=REGULAR;
-	printf("ARRAY ASSIGNMENT %s\n %d", t1.value, v_stack[v_top].value.intg);	
+	unsigned int offset = (v_stack[v_top].type==F)? (int) v_stack[v_top].value.sing:v_stack[v_top].value.intg;
 	expression(&current);
-	dump_stack();
+	//	dump_stack();
 	evaluate();
-	
+	printf("ARRAY ASSIGNMENT %s(%d)=%f ", t1.value, offset, (v_stack[v_top].type==I)? (float)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
+	set_value_in_array_from(t1.value, offset, &v_stack[v_top]);
 	//top of v_stack has name, offset
       }
       

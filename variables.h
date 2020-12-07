@@ -11,11 +11,14 @@
 
 //First char of varname is type (i, s, 
 
-enum var_types { F, I, S, D, STRV, IA, SA, DA, STRA, FV,INV};
+enum VAR_types { F, I, D, STRV, IA, FA, DA, STRA, FV,INV};
+typedef enum VAR_types var_types;
 
 typedef struct ARRAY {
   void *ptr;
-  unsigned int len;
+  unsigned int size;
+  uint8_t number_of_dimensions;
+  uint16_t *dimensions;
 } array;
 
 typedef struct STRING {
@@ -33,7 +36,7 @@ typedef struct FOR_VAR {
 //value is *ALWAYS* an integer for arrays. After dimming, they live somewhere else. This value is used
 //for lookup and setting.
 typedef union VALUE {
-  array *ary;
+  array ary;
   int intg;
   float sing;
   double dubl;
@@ -47,7 +50,7 @@ typedef union VALUE {
 typedef struct VARIABLE {
   char name [VARNAME_MAX];
   value value;
-  enum var_types type;
+  var_types type;
 } variable;
 
 
@@ -60,7 +63,7 @@ char string_area[64000];
 variable vars[256];
 unsigned int num_vars;
 
-void free_variable(variable *);
+void free_variable_by_reference(variable *);
 //void free_variable(variable *);
 void free_variable(int);
 //int  find_variable(int);
@@ -83,9 +86,14 @@ void append_string_to_buffer(char *);
 void free_by_name(char *);
 void free_by_number(int);	 		 
 uint8_t populate_variable(variable *, token *, token *);
-uint8_t dim_array(variable *location, token *name, unsigned int size);
-uint8_t get_val_from_array(variable *result, char *name, unsigned int offset);
-uint8_t set_val_in_array(variable *value, char *name, unsigned int offset);
+uint8_t dim_array(token *name, unsigned int size, uint8_t);
+uint8_t get_value_from_array_into(char *name, unsigned int offset, variable *);
+uint8_t set_value_in_array_from(char *name, unsigned int offset, variable *);
+uint16_t get_dimension_n(char *name, uint8_t offset);
 void read_anonymous_variable(variable *, token *);
+int variable_exists(char *);
+void auto_convert(variable *, variable *);
+void convert_variable_to_int(variable *);
+uint8_t set_dimension_n(char *, uint8_t, uint16_t);
 
 #endif

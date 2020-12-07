@@ -33,6 +33,41 @@ int is_operand(token *t){
   return 0;
 }
 
+//catchy name
+void convert_stack_to_int_below_n(unsigned int n){
+  if (n > v_top)
+    n = v_top;
+  if (n<0)
+    return;
+  for(int a=0; a <= n; a++)
+    convert_variable_to_int(&v_stack[a]);
+  return;
+}
+
+unsigned int calculate_array_size() {
+  if (v_top< 0)
+    return 0;  
+  unsigned int total = v_stack[0].value.intg;
+  for (int i=1; i <= v_top; i++) {
+    total = total *v_stack[i].value.intg;
+  }
+  //TODO - Error check range on dimension
+  return total;
+}
+
+unsigned int calculate_array_offset(unsigned int number_of_dimensions, int i){
+  if (v_top - number_of_dimensions <0)
+    //TODO - Set ERROR
+    return(0);  
+  
+  unsigned int accumulator = 0;
+  for (int ic = 0; ic < (number_of_dimensions-1); ic++){
+    convert_variable_to_int(&v_stack[v_top-ic]);
+    //TODO - ERROR CONDITION, OUTSIDE BOUNDS
+    accumulator += v_stack[v_top-ic].value.intg * get_dimension_n(working_stack[i].value, ic);	  
+  }
+  return(accumulator);  
+}
 
 //what to do about not. write to stack with low or high precedence?
 //Not all operators decrement stack....
@@ -92,13 +127,12 @@ void do_operator(uint8_t t)
   default:
     break;
   }
-
+  
   
 }
 
 
-//we use working and operator stack....
-//could do pointer arithmatic. Would dramatically reduce caluclations.
+
 //NOT token is a special case... what to do.
 
 variable  evaluate(){
@@ -107,16 +141,13 @@ variable  evaluate(){
   int comma_count = 0;
   for (int i = 0; i <= working_top; i++){
 
-    //need to handle the case of an equals being the final operator. Comparison if IF is set, assignment otherwise.
-  
-    
+    //need to handle the case of an equals being the final operator. Comparison if IF is set, assignment otherwise.    
     //special case for IF - it is not equals, it is assignment. 
     // handle assignment specially
     //all commas must be in parens. When we get to a function or array lookup, we pop the arguments off in reverse order!  
     if(working_stack[i].type == OPERATOR && working_stack[i].value[0] == COMMA){
       comma_count++;
     }
-
       
     else if (working_stack[i].type == OPERATOR) {
       if (v_top >=1)
@@ -124,63 +155,31 @@ variable  evaluate(){
     }      
       //calculates index with top N elements, and pushes result to top of stack
     else if(working_stack[i].type == ARRAY){
-      //create or access?
+      //create or access?      
+      if (GLOBAL_STATE==IN_DIM && i==working_top){
+	//nothing else should follow this statement other than : or \n.
+	//stack should contain N values that constitute the number of dimensions
+	return v_stack[v_top];
+      }
+      int number_of_dimensions = get_array_dims(working_stack[i].value);
+      printf("array %s, get_array_dims: %d\n", working_stack[i].value, number_of_dimensions);
       
-      if (GLOBAL_STATE==IN_DIM){
-        //top of the stack is number of dimensions. just under will be total elements
-        //dim anywhere in an expression other than start is an error.
-        //calculate total size,
-        //comma count is bullshit
-        for (int ic = 0; ic < v_top; ic++)
-          do_operator(MULTIPLY);
-        v_top++;
-        v_stack[v_top].type = I;
-        v_stack[v_top].value.intg = comma_count;
-        v_stack[v_top].name[0] = '\0';
-        return v_stack[v_top];
-      }
-
+      unsigned int accumulator = calculate_array_offset(number_of_dimensions, i);     
       //special code for array assignments. Just sets zero.
-      else if (GLOBAL_STATE==ASSIGNMENT){
+      if (GLOBAL_STATE==ASSIGNMENT){
         //will be an error, undimmed array.
-        int num = get_array_dims(working_stack[i].value);
-        //	if (num !=comma_count+1)
-        //printf("Error: Undimmed or assignment to invalid subscript\n");
-        for (int ic = 0; ic < num-1; ic++)
-          do_operator(MULTIPLY);
-        if (v_stack[v_top].type !=I)
-          v_stack[v_top].value.intg = (int) v_stack[v_top].value.sing;
-        strcpy(v_stack[v_top].name, working_stack[i].value);
+	v_top -= number_of_dimensions-1;
+	printf("dims calculated to %d\n", accumulator);
+	v_stack[v_top].value.intg = accumulator;
+	v_stack[v_top].type = i;
         return(v_stack[v_top]);
-      }
-      int num = get_array_dims(working_stack[i].value);
-          //verfiy comma count
-
-          //might want to verify integer type...
-          //if (comma_count != num-1)
-        //printf("INVALID SUBSCRIPT ERROR\n");
-
-
-      for (int ic = 0; ic < num; ic++)
-        do_operator(MULTIPLY);
-      //      if (v_stack[v_top].type !=I)
-      //	v_stack[v_top].value.intg = (int) v_stack[v_top].value.sing;
-      //strcpy(v_stack[v_top].name, working_stack[working_top].value);
-     if (working_stack[i].type == STRING) {
-        //TODO put string array in working buffer at offset
 	
       }
-      else{
-        printf("Array value %f calculated\n", v_stack[v_top].value.sing);
-        //put_array_value_in_var(&v_stack[v_top], working_stack[working_top].value) ;
-      }
-        //comma_count=0;
+      //else fetch
+      get_value_from_array_into(working_stack[i].value ,accumulator, &v_stack[v_top]);
+      printf("%s(%d)=%f retrieved\n", working_stack[i].value, accumulator, (v_stack[v_top].type == I)?(double)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
+      //continue
       
-	  
-      //assume single dimension for now.
-      //v_top--;
-      //v_stack[v_top].type = F;
-      //v_stack[v_top].value.intg =22.22;
     }
     else if(working_stack[i].type == FUNCTION) {
       v_stack[v_top].type = F;

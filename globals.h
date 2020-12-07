@@ -21,6 +21,8 @@ variable evaluate();
 unsigned int execute_line(char *);
 void dump_token(token );
 
+void convert_stack_to_int_below_n(unsigned int n);
+unsigned int calculate_array_size();
 
 variable v_stack[10];
 int v_top;

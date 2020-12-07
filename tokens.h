@@ -56,7 +56,7 @@ static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "
 
 static int STR_MATCH[] = {AND, OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, GOTO, GOSUB, PRINT, DIM};
 
-#define NUM_FUNCTIONS 11
+#define NUM_FUNCTIONS 8
 static char *FUNCTION_MATCH[] = {"COS", "SIN", "TAN", "LEN", "RND", "LEFT$", "RIGHT$", "CHR$"};
 
 static char *TOKEN_CHAR[] = {'\0', "+", "-", "/", "*", "^", "(", ")", ",", ";", ":","AND", "OR", "NOT", ">", "<" , ">=", "<=", "<>", "=", "IF", "THEN", "FOR", "NEXT", "TO", "ELSE", "NEXT", "TO","ELSE", "GOTO","GOSUB","PRINT","DIM"};
