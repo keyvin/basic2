@@ -37,7 +37,6 @@ unsigned int execute_line(char *line_text)
 	  int if_counter=0;
 	  token find_if;
 
-
 	  //we break when we find a matching else, or we fall of the line
 	  while (1){
 	    read(&current, &find_if);
@@ -83,8 +82,8 @@ unsigned int execute_line(char *line_text)
     }
   
   
-  
-  if (control.type == OPERATOR && control.value[0]==EQ && EQ_SWITCH==ASSIGNMENT) {      
+    
+    if (control.type == OPERATOR && control.value[0]==EQ && EQ_SWITCH==ASSIGNMENT) {      
       //single symbol.
     GLOBAL_STATE = ASSIGNMENT;
     if (working_top == 0){

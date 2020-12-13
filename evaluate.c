@@ -197,8 +197,12 @@ variable  evaluate(){
       v_stack[v_top] = *find_variable(working_stack[i].value);
       //fetch value, place on variable stack
     }
+    else if (working_stack[i].type == STRING){
+      //Should be in the string buffer seperated by \0
+      
+    }
     
-    else if (working_stack[i].type == INTEGER || working_stack[i].type == FLOAT || working_stack[i].type == STRING || working_stack[i].type == DOUBLE){
+    else if (working_stack[i].type == INTEGER || working_stack[i].type == FLOAT || working_stack[i].type == DOUBLE){
       read_anonymous_variable(&v_stack[++v_top], &working_stack[i]);
     }
    //convert and put on the stack.      

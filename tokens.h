@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #define TOKEN_ERROR_1 "INVALID TOKEN"
+//this cannot be less than t_string_info
 #define MAX_TOKEN_LENGTH 20
 #define MAX_STRING 128
 #define MAX_TOKENS 29
@@ -76,6 +77,11 @@ typedef struct TOKEN {
   char value[MAX_TOKEN_LENGTH];
   enum t_type type;
 } token;
+
+typedef struct T_STRING_INFO {
+  char *start;
+  unsigned int length;
+} t_string_info;
 
 token buffer;
 char read_buffer[MAX_STRING];

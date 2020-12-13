@@ -109,7 +109,7 @@ void read(char **string, token *token) {
   //chomp white space
   while (*ptr == ' ')
     ptr++;
-  //read string
+  //read string - fine for tokens, variables need to be copied (everything is mutable)
   if (*ptr == '"'){
     token->value[0] = '\0';
     token->type = STRING;
@@ -194,13 +194,18 @@ void read(char **string, token *token) {
 	  }	      
 	}
 	if(token->type == STRING){
-	  char *start = string_buffer;
 	  ptr++;
+	  char *start = ptr;
 	  while (*ptr != '"' &&  *ptr!= '\n' && *ptr != '\0')
-	    *(start++)=*(ptr++);	  
-	  *start='\0';
+	    ptr++;	  
+	  if (*ptr=='\n' || *ptr=='\0')
+	    goto ERROR;
+	  t_string_info *info = (t_string_info *)(token->value);
+	  info->start = start;
+	  info->length = (unsigned int) (ptr-start);
 	  ptr++;
 	}
+
 	*string = ptr;
 	return;
  ERROR:

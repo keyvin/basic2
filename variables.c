@@ -12,6 +12,7 @@
 //if token2 is a string, it should have already been read into the string buffer
 //we can use the pointer to program memory as well... actually....
 //anon strings just use string buffer till assignment.
+
 void print_variable(variable v){
   char *type;
   double value;
@@ -21,12 +22,10 @@ void print_variable(variable v){
     value = (double)v.value.intg;
     break;
   case F:
-
     type = "Float";
     value = (double)v.value.sing;
     break;
   case IA:
-
     type = "Integer Array";
     value = (double)v.value.ary.size;
     break;
@@ -36,9 +35,8 @@ void print_variable(variable v){
     break;
   }  
   printf ("variable: %s, type %s, value or length: %f\n", v.name, type, (double) value);
-
-
 }
+
 
 unsigned int find_next_free(){
   //find next free.
@@ -72,6 +70,7 @@ int get_array_dims(char *to_find)
 
 void free_variable_by_reference(variable *target){
 
+
 }
 
 void check_copy_name(char *dest, char *name){
@@ -92,9 +91,9 @@ void check_copy_name(char *dest, char *name){
 uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
   if (variable_exists(name->value)!=-1){
     //error condition
-    printf("error, already exists");
-    
+    printf("error, already exists");    
   }
+
   token t_tmp;
   strcpy(t_tmp.value,"0.0");
   t_tmp.type = FLOAT;
@@ -165,9 +164,7 @@ uint16_t get_dimension_n(char *name, uint8_t dimension){
   if (dimension > vars[offset].value.ary.number_of_dimensions)
     return 0;
   //TODO --SET ERROR
-  return vars[offset].value.ary.dimensions[dimension];
-    
-
+  return vars[offset].value.ary.dimensions[dimension];    
 }
 
 /*void put_array_value_in_var(variable *a, char *b)
@@ -180,17 +177,16 @@ uint16_t get_dimension_n(char *name, uint8_t dimension){
 // set global error state to out of bounds and return 0.
 
 uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *target){  
-  //error condition
+  //TODO - error condition
   variable *from = find_variable(name);
   if (!from)
     return 0;
   if (index >= from->value.ary.size || index < 0){
     // out of bounds
     return 0;
- }
-
-//may not be necessary with garbage collection
-//  free_variable_by_reference(target);
+  }  
+  //may not be necessary with garbage collection
+  //  free_variable_by_reference(target);
   target->name[0] = '\0';
   array *ary = &from->value.ary;
   switch (from->type){
@@ -206,8 +202,10 @@ uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *tar
     //need to make a copy
     target->type = STR;
     target->value.str.ptr = '\0';
-    target->value.str.length = 0;
-      break;
+    target->value.str.length = strlen(((char *)ary->ptr)+index);
+    strcpy(((char *)ary->ptr)+index, string_buffer+string_buffer_position);
+    string_buffer_position += target->value.str.length;
+    break;
   case DA:
     target->type = D;
     target->value.dubl = *(((double *)ary->ptr)+index);
@@ -225,47 +223,44 @@ uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *tar
 uint8_t set_value_in_array_from(char *name, unsigned int index, variable *from) {
   //may not be necessary with garbage collection
   //definitely necessary with strings.
- variable *target = find_variable(name);
- if(!target){
-   printf("not found\n");
-   //error
-   return 0;
- }
- if (index >= target->value.ary.size || index < 0){
-   printf("Out of bounds\n");
+  variable *target = find_variable(name);
+  if(!target){
+    printf("not found\n");
+    //error
+    return 0;
+  }
+  if (index >= target->value.ary.size || index < 0){
+    printf("Out of bounds\n");
    // out of bounds
-   return 0;
- }
-   
- auto_convert(target, from);
- 
- //strings
- array *ary = &target->value.ary;
- switch (target->type){
-    case IA:
+    return 0;
+  }
+  
+  auto_convert(target, from);  
+  //strings
+  array *ary = &target->value.ary;
+  switch (target->type){
+  case IA:
       *(((int *)ary->ptr)+index) = from->value.intg;
       break;
-    case FA:
-      *(((float *)ary->ptr)+index) = from->value.sing;
-      break;
-    case STR:
-      //need to make a copy
-      target->type = STR;
-      //target->value.str->ptr = '\0';
-      //target->value.str->len = 0;
-      break;
-    case D:
-      // target->type = D;
-      //      target->value.dubl = *(((double *)ary->ptr)+index);
-      break;
-    default:
-      break;
-      //error condition
+  case FA:
+    *(((float *)ary->ptr)+index) = from->value.sing;
+    break;
+  case STR:
+    //need to make a copy
+    target->type = STR;
+    //target->value.str->ptr = '\0';
+    //target->value.str->len = 0;
+    break;
+  case D:
+    // target->type = D;
+    //      target->value.dubl = *(((double *)ary->ptr)+index);
+    break;
+  default:
+    break;
+    //error condition
   }
   return 0;
 }
-
-
 
 
 //can b
@@ -280,7 +275,7 @@ int variable_exists(char *to_find) {
   return offset;
 }
 
-variable * find_variable(char *to_find)
+variable *find_variable(char *to_find)
 {
   for (int i=0; i < MAX_VARS;i++){
     if (strcmp(vars[i].name, to_find)==0)
@@ -305,17 +300,20 @@ variable * set_variable(char *to_set, variable *var)
     }
   
   if (offset !=-1){
-
     if (vars[offset].type==STR){	
-      free(vars[offset].value.str.ptr);
+      if (vars[offset].value.str.ptr)
+	free(vars[offset].value.str.ptr);
       vars[offset].value.str.ptr = (char *) malloc(sizeof(char)*strlen(var->value.str.ptr)+1);
-      strcpy(vars[offset].value.str.ptr, var->value.str.ptr);
+      strncpy(vars[offset].value.str.ptr, var->value.str.ptr, var->value.str.length);
+      vars[offset].value.str.length = var->value.str.length;
       return &vars[offset];
     }
     else if (vars[offset].type==IA || vars[offset].type == FA || vars[offset].type==STRA || vars[offset].type==DA) {
       if (vars[offset].value.ary.ptr){
-	free (vars[offset].value.ary.ptr);
-	free(vars[offset].value.ary.dimensions);
+	if (vars[offset].value.ary.ptr)
+	  free (vars[offset].value.ary.ptr);
+	if (vars[offset].value.ary.dimensions)
+	  free(vars[offset].value.ary.dimensions);
       }
     }
     else {
@@ -346,15 +344,12 @@ void read_anonymous_variable(variable *var, token *token1)
     var->value.str.length = strlen(string_buffer);
     break;
   default:
-    var->type = INV;
-    
+    var->type = INV;    
   }
   var->name[0]='\0';
 }
   
-      
-     
-
+           
 uint8_t populate_variable(variable *var, token *token1 , token *token2)
 {
   //assume token1 is a variable name. If the last char is $, %, ! or alpha matters. First char of name is type.....
@@ -376,7 +371,7 @@ uint8_t populate_variable(variable *var, token *token1 , token *token2)
     //copy out of the global string buffer
   case '$':
     var->type = STR;    
-    var->value.str.ptr = (char *) malloc(sizeof(char)*strlen(string_buffer));
+    var->value.str.ptr = (char *) malloc(sizeof(char)*);
     var->value.str.length = strlen(string_buffer);
     break;
   default:
@@ -384,9 +379,7 @@ uint8_t populate_variable(variable *var, token *token1 , token *token2)
     var->type = F;
     break;
   }
-  strcpy(var->name, token1->value);
-  
-      
+  strcpy(var->name, token1->value);      
   return 1;
 }
 
@@ -424,12 +417,6 @@ void auto_convert(variable *a, variable *b){
   }
 }
     
-      
-    
-
-
-
-
 
 /*replace with my own*/
 float read_float(char *s)
