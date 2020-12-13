@@ -4,6 +4,7 @@
 #include "tokens.h"
 #include "expression.h"
 #include "globals.h"
+#include <stdlib.h>
 // I think I can safely get rid of type and value...
 
 //state machine: Line number
@@ -29,6 +30,11 @@ int v_top=-1;
 
 int is_operand(token *t){
   if (t->type  == INTEGER || t->type == FLOAT || t->type == STRING || t->type == DOUBLE)
+    return 1;
+  return 0;
+}
+uint8_t is_operable(variable *v) {
+  if (v->type==STR || v->type==D || v->type==STR || v->type==I)
     return 1;
   return 0;
 }
@@ -76,8 +82,35 @@ void do_operator(uint8_t t)
   double accum = 0;
   double accum2 = 0;
   //will need another operator table for strings.
-
+  
   // assume integer if not float (fix later for double and string...)
+  if (!(is_operable(&v_stack[v_top]) && is_operable(&v_stack[v_top-1]))){
+      //TODO-ERROR CONDITION, CANNOT OPERATE DIRECTLY ON ARRAYS
+      return;
+    }
+  //all operators concatenate. ',' did something special in gwbasic
+  //many of these variables will have a NULL value - they were copied
+  //into the string_buffer.
+  if (v_stack[v_top].type == STR && v_stack[v_top].type==STR) {
+    if(v_stack[v_top].value.str.ptr) { //not in string buffer yet
+      strncpy((string_buffer+string_buffer_position), v_stack[v_top].value.str.ptr, v_stack[v_top].value.str.length);
+      free(v_stack[v_top].value.str.ptr);
+      v_stack[v_top].value.str.ptr = NULL;
+    }
+    v_top--;
+    if(v_stack[v_top].value.str.ptr) {
+      strncpy((string_buffer+string_buffer_position), v_stack[v_top].value.str.ptr, v_stack[v_top].value.str.length);
+      free(v_stack[v_top].value.str.ptr);
+      v_stack[v_top].value.str.ptr = NULL;
+    }
+  }
+
+  else if(v_stack[v_top].type == STR) {
+    //TODO ERROR, type mismatch
+    free(v_stack[v_top].value.str.ptr);
+    return;
+  }
+
   if (v_stack[v_top].type == F)
     accum = v_stack[v_top].value.sing;
   else

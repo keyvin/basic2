@@ -38,6 +38,28 @@ void print_variable(variable v){
 }
 
 
+void copy_string_var_to_ptr(char *to, variable *var){
+  if(to != NULL)
+    (free);
+  if (var->type != STR)
+    return; //TODO -- ERROR
+
+      //Value is in the string buffer
+  if (var->value.str.ptr==NULL){
+    to = (char *) malloc(sizeof(char)*string_buffer_position);
+    strncpy(to, string_buffer, string_buffer_position);
+    to[string_buffer_position]='\0';
+  }
+      //we are making a copy of var (this code path shouldn't be used, but it's here)
+  else {
+    to = (char *) malloc(sizeof(char)*var->value.str.length);
+    strncpy(to, var->value.str.ptr, var->value.str.length);    
+  }
+  
+}
+
+  
+
 unsigned int find_next_free(){
   //find next free.
   int offset = -1;
@@ -114,7 +136,7 @@ uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
     break;
   case STR:
     location.type = STRA;
-    bytes = sizeof(string)*size;
+    bytes = sizeof(char *)*size;
     break;
   case D:
     location.type = DA;
@@ -124,14 +146,10 @@ uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
     break;
     //else error
   };   
-  if (location.type == STRA){
-    location.value.ary.ptr = NULL;
-    location.value.ary.size = 0;
-  }
-  else {    
+    
   location.value.ary.ptr = (void *) malloc(bytes);
   location.value.ary.size = size;
-  }
+
   set_variable(location.name, &location);
   //if a string,
   //more work?
@@ -199,7 +217,7 @@ uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *tar
     target->value.sing = *(((float *)ary->ptr)+index);
     break;
   case STRA:
-    //need to make a copy
+    //Read into string buffer
     target->type = STR;
     target->value.str.ptr = '\0';
     target->value.str.length = strlen(((char *)ary->ptr)+index);
@@ -245,9 +263,9 @@ uint8_t set_value_in_array_from(char *name, unsigned int index, variable *from) 
   case FA:
     *(((float *)ary->ptr)+index) = from->value.sing;
     break;
-  case STR:
+  case STRA:
     //need to make a copy
-    target->type = STR;
+    copy_string_var_to_ptr(((char *) ary->ptr)+index, from);
     //target->value.str->ptr = '\0';
     //target->value.str->len = 0;
     break;
@@ -284,8 +302,7 @@ variable *find_variable(char *to_find)
   return NULL;  
 }
 
-
-variable * set_variable(char *to_set, variable *var)
+variable *set_variable(char *to_set, variable *var)
 {
   if (num_vars == MAX_VARS)
     return NULL;
@@ -303,9 +320,6 @@ variable * set_variable(char *to_set, variable *var)
     if (vars[offset].type==STR){	
       if (vars[offset].value.str.ptr)
 	free(vars[offset].value.str.ptr);
-      vars[offset].value.str.ptr = (char *) malloc(sizeof(char)*strlen(var->value.str.ptr)+1);
-      strncpy(vars[offset].value.str.ptr, var->value.str.ptr, var->value.str.length);
-      vars[offset].value.str.length = var->value.str.length;
       return &vars[offset];
     }
     else if (vars[offset].type==IA || vars[offset].type == FA || vars[offset].type==STRA || vars[offset].type==DA) {
@@ -327,6 +341,20 @@ variable * set_variable(char *to_set, variable *var)
 }
 
 
+
+//Anonymous strings 
+
+void fill_string_from_token(variable *var, token *token1){
+  var->type = STR;    
+  unsigned int length = ((t_string_info *)token1->value)->length+1;
+  char *str_ptr = ((t_string_info *)token1->value)->start;      
+  var->value.str.ptr = (char *) malloc(sizeof(char)*length);
+  var->value.str.length = length;
+  strncpy(var->value.str.ptr,str_ptr, length);
+  var->value.str.ptr[length]='\0';
+}
+
+
 void read_anonymous_variable(variable *var, token *token1)
 {
   switch (token1->type){
@@ -339,16 +367,19 @@ void read_anonymous_variable(variable *var, token *token1)
     var->value.sing = read_float(token1->value);
     break;
   case STRING:
-    var->type = STR;    
-    var->value.str.ptr = string_buffer;
-    var->value.str.length = strlen(string_buffer);
+    var->type = STR;        
+    var->value.str.ptr = '\0';
+    var->value.str.length = ((t_string_info *) token1->value)->length;
+    strncpy(string_buffer+string_buffer_position, ((t_string_info *) token1->value)->start, var->value.str.length);
+    string_buffer_position += var->value.str.length;
     break;
   default:
     var->type = INV;    
   }
   var->name[0]='\0';
 }
-  
+
+
            
 uint8_t populate_variable(variable *var, token *token1 , token *token2)
 {
@@ -370,9 +401,7 @@ uint8_t populate_variable(variable *var, token *token1 , token *token2)
     break;
     //copy out of the global string buffer
   case '$':
-    var->type = STR;    
-    var->value.str.ptr = (char *) malloc(sizeof(char)*);
-    var->value.str.length = strlen(string_buffer);
+    fill_string_from_token(var,token2);
     break;
   default:
     var->value.sing = read_float(token2->value);
