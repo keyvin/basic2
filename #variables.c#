@@ -43,7 +43,7 @@ void print_variable(variable v){
 
 void copy_string_var_to_ptr(char *to, variable *var){
   if(to != NULL)
-    free(to);
+     free(to);
   if (var->type != STR)
     return; //TODO -- ERROR
 
