@@ -107,7 +107,10 @@ unsigned int execute_line(char *line_text)
 	expression(&current);
 	//	dump_stack();
 	evaluate();
-	printf("ARRAY ASSIGNMENT %s(%d)=%f ", t1.value, offset, (v_stack[v_top].type==I)? (float)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
+	if (v_stack[v_top].type==STR)
+	  printf("ARRAY ASSIGNMENT %s(%d)=%s\n", t1.value, offset, string_buffer);
+	else
+	  printf("ARRAY ASSIGNMENT %s(%d)=%f\n", t1.value, offset, (v_stack[v_top].type==I)? (float)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
 	set_value_in_array_from(t1.value, offset, &v_stack[v_top]);
 	//top of v_stack has name, offset
       }

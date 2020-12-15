@@ -16,7 +16,9 @@
 void print_variable(variable v){
   char *type;
   double value;
+  type = "STRING OR DOUBLE";
   switch (v.type){
+    
   case I:
     type = "Integer";
     value = (double)v.value.intg;
@@ -121,7 +123,7 @@ uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
   t_tmp.type = FLOAT;
   
   variable location;    
-  populate_variable(&location,name, &t_tmp); 
+  populate_variable(&location, name, &t_tmp); 
   location.value.ary.number_of_dimensions = num_dims;
   location.value.ary.dimensions = malloc(sizeof(uint16_t)*num_dims);
   unsigned int bytes;
@@ -401,10 +403,10 @@ uint8_t populate_variable(variable *var, token *token1 , token *token2)
     break;
     //copy out of the global string buffer
   case '$':
-    if (token2->type== STRING)
+    if (token2->type == STRING)
       fill_string_from_token(var,token2);
     else
-      var->type=STRING;
+      var->type=STR;
     break;
   default:
     var->value.sing = read_float(token2->value);

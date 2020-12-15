@@ -212,7 +212,10 @@ variable  evaluate(){
       //else fetch
       v_top-=number_of_dimensions-1;
       get_value_from_array_into(working_stack[i].value ,accumulator, &v_stack[v_top]);
-      printf("%s(%d)=%f retrieved\n", working_stack[i].value, accumulator, (v_stack[v_top].type == I)?(double)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
+      if (v_stack[v_top].type == STR)
+	printf("%s(%d)=%s retrieved\n", working_stack[i].value, accumulator, string_buffer);
+      else
+	printf("%s(%d)=%f retrieved\n", working_stack[i].value, accumulator, (v_stack[v_top].type == I)?(double)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
       //continue
       
     }
