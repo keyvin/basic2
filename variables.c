@@ -401,7 +401,10 @@ uint8_t populate_variable(variable *var, token *token1 , token *token2)
     break;
     //copy out of the global string buffer
   case '$':
-    fill_string_from_token(var,token2);
+    if (token2->type== STRING)
+      fill_string_from_token(var,token2);
+    else
+      var->type=STRING;
     break;
   default:
     var->value.sing = read_float(token2->value);

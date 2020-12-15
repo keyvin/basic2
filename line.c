@@ -135,6 +135,7 @@ unsigned int execute_line(char *line_text)
     }
     GLOBAL_STATE=REGULAR;
     EQ_SWITCH=ASSIGNMENT;
+    string_buffer_position=0;
     expression(&current);
   }  
 }

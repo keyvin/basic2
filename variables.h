@@ -62,7 +62,7 @@ typedef struct VARIABLE {
 
 #define MAX_VARS 256
 //64k of string memory... for now...
-char string_area[64000];
+//char string_area[64000];
 variable vars[256];
 unsigned int num_vars;
 

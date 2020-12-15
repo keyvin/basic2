@@ -34,7 +34,7 @@ int is_operand(token *t){
   return 0;
 }
 uint8_t is_operable(variable *v) {
-  if (v->type==STR || v->type==D || v->type==STR || v->type==I)
+  if (v->type==STR || v->type==D || v->type==I || v->type==F)
     return 1;
   return 0;
 }
@@ -103,6 +103,7 @@ void do_operator(uint8_t t)
       free(v_stack[v_top].value.str.ptr);
       v_stack[v_top].value.str.ptr = NULL;
     }
+    return;
   }
 
   else if(v_stack[v_top].type == STR) {
@@ -209,6 +210,7 @@ variable  evaluate(){
 	
       }
       //else fetch
+      v_top-=number_of_dimensions-1;
       get_value_from_array_into(working_stack[i].value ,accumulator, &v_stack[v_top]);
       printf("%s(%d)=%f retrieved\n", working_stack[i].value, accumulator, (v_stack[v_top].type == I)?(double)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
       //continue
@@ -232,7 +234,7 @@ variable  evaluate(){
     }
     else if (working_stack[i].type == STRING){
       //Should be in the string buffer seperated by \0
-      
+      read_anonymous_variable(&v_stack[++v_top], &working_stack[i]);
     }
     
     else if (working_stack[i].type == INTEGER || working_stack[i].type == FLOAT || working_stack[i].type == DOUBLE){

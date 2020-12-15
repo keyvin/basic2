@@ -20,7 +20,8 @@ int main(int argv, char **argc)
 
   //  char *totoken = "0";
   //char *taktak = "IF X<>5 AND Y>4 THEN FUN1(FUN2(2+3, fun4(4+5), 2+3*4)*2+2)+SYM3: ELSE X=6+3*(3-4):x$=\"hello world\"";
-  char *taktak = "F=3:DIM X(F,4+1,5):DIM Z(2, 2):Z(0,0)=1: Z(1,1)=1: V=Z(0,0): J=Z(1,1): X(1*4,2,3)=5+4*(3*2)/2:Y=5+X(X(3,3,3),X(2,2*Z(1,V),2),1)";
+  //  char *taktak = "F=3:DIM X(F,4+1,5):DIM Z(2, 2):Z(0,0)=1: Z(1,1)=1: V=Z(0,0): J=Z(1,1): X(1*4,2,3)=5+4*(3*2)/2:Y=5+X(X(3,3,3),X(2,2*Z(1,V),2),1)";
+  char *taktak = "DIM f$(10): a$ =\"hello world\":b$=a$+\" today\":f$(0)=a$";
   //char *taktak = "DIM X(5, 5, 5): X(1*4,2,4)=6+2";
   //  char *taktak = "IF 1=2 THEN IF 1=1 THEN V=1 :ELSE V=2 :ELSE V=3";
   char *sac ;
@@ -45,6 +46,8 @@ int main(int argv, char **argc)
     dump_token(control)
   }
   */
+  char input_buffer[200];
+  fgets(input_buffer,20,stdin);
   return 0;
 
 }
