@@ -21,6 +21,18 @@ unsigned int execute_line(char *line_text)
   expression(&current);
   while(control.type != EOL && control.type != ERROR && *current!='\0'){    
 
+    if (control.type == FLOW && control.value[0]==PRINT) {
+      printf("in print\n");
+      expression(&current);
+      evaluate();
+      
+      if (v_stack[0].type == STRV || v_stack) {
+	string_buffer[string_buffer_position+1] = '\0';
+	printf("%s\n", string_buffer);
+      }
+
+    }
+							   
     if (control.type == FLOW && control.value[0]==IF){
       EQ_SWITCH=REGULAR;
       expression(&current);
