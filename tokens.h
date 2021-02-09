@@ -83,8 +83,8 @@ typedef struct T_STRING_INFO {
   unsigned int length;
 } t_string_info;
 
-token buffer;
-char read_buffer[MAX_STRING];
+extern token buffer;
+extern char read_buffer[MAX_STRING];
 //pass by value 
 
 uint8_t is_operator(char);

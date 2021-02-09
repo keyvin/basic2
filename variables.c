@@ -10,9 +10,15 @@
 #define ERROR "error"
 
 
+variable vars[256];
+unsigned int num_vars;
+
+
 //if token2 is a string, it should have already been read into the string buffer
 //we can use the pointer to program memory as well... actually....
 //anon strings just use string buffer till assignment.
+
+
 
 void print_variable(variable v){
   char *type;

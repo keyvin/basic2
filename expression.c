@@ -6,6 +6,14 @@
 //#include "variables.h"
 #include <stdint.h>
 
+token working_stack[MAX_T_STACK];
+token operator_stack[MAX_T_STACK];
+int operator_top;
+int working_top;
+token control;
+
+
+
 // I may want to actually keep the ) and ( on the stack as they are delimiters. 
  
 //creates an evaluateable stack from an expression.

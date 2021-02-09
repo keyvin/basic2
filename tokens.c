@@ -8,6 +8,10 @@
 //#include "expressions.h"
 //read token
 
+token buffer;
+char read_buffer[MAX_STRING];
+
+
 
 //the : operator combines statements into a single line-num
 //the ; tells print to omit a new line

@@ -9,11 +9,11 @@
 enum expression_result {SUCCESS, CONTINUE, FINISHED};
   
 //variable working_v[3];
-token working_stack[MAX_T_STACK];
-token operator_stack[MAX_T_STACK];
-int operator_top;
-int working_top;
-token control;
+extern token working_stack[MAX_T_STACK];
+extern token operator_stack[MAX_T_STACK];
+extern int operator_top;
+extern int working_top;
+extern token control;
 uint8_t pop_operators(uint8_t);
 uint8_t expression(char **);
 
