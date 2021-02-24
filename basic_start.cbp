@@ -53,6 +53,10 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="program.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="program.h" />
 		<Unit filename="todo.txt" />
 		<Unit filename="tokens.c">
 			<Option compilerVar="CC" />

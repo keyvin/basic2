@@ -19,20 +19,20 @@ unsigned int execute_line(char *line_text)
   current=previous=line_text;
   //will set control to next....
   expression(&current);
-  while(control.type != EOL && control.type != ERROR && *current!='\0'){    
+  while(control.type != EOL && control.type != ERROR && *current!='\0'){
 
     if (control.type == FLOW && control.value[0]==PRINT) {
       printf("in print\n");
       expression(&current);
       evaluate();
-      
+
       if (v_stack[0].type == STRV || v_stack) {
 	string_buffer[string_buffer_position+1] = '\0';
 	printf("%s\n", string_buffer);
       }
 
     }
-							   
+
     if (control.type == FLOW && control.value[0]==IF){
       EQ_SWITCH=REGULAR;
       expression(&current);
@@ -42,7 +42,7 @@ unsigned int execute_line(char *line_text)
       if (control.type == FLOW && control.value[0]==THEN) {
 	//logical true - we don't need to do anything.
 	if (v_stack[v_top].value.sing != 0){
-	  
+
 	}
 	else {
 	  // read tokens until we get to newline, or else.
@@ -58,19 +58,19 @@ unsigned int execute_line(char *line_text)
 	      if (if_counter >0) if_counter--;
 	      else {
 		break;
-	      }	     	      
+	      }
 	    }
 	    if(control.type == EOL)
-	      break;	    	   	 	  	    
+	      break;
 	  }
-	  
+
 	}
-	
+
       }
     }
     if (control.type == FLOW && control.value[0] == ELSE)
       return 0;
-            
+
     if (control.type == FLOW && control.value[0] == FOR) { }
     //assignment. Set up stack. Get PTR to read/write address
     if (control.type == FLOW && control.value[0] == DIM) {
@@ -84,7 +84,7 @@ unsigned int execute_line(char *line_text)
       unsigned int array_size = calculate_array_size();
       dim_array(&working_stack[working_top], array_size, v_top+1);
       printf("ARRAY DIMMED %s, %d dimensions\n", working_stack[working_top].value, v_top+1);
-      printf("NUMBER OF ELEMENTS: %d\n", array_size);      
+      printf("NUMBER OF ELEMENTS: %d\n", array_size);
       printf("Dimension values: ");
       for (int a = v_top; a >= 0; a--){
 	set_dimension_n(working_stack[working_top].value, a, v_stack[a].value.intg);
@@ -92,14 +92,14 @@ unsigned int execute_line(char *line_text)
       }
       printf("\n");
     }
-  
-  
-    
-    if (control.type == OPERATOR && control.value[0]==EQ && EQ_SWITCH==ASSIGNMENT) {      
+
+
+
+    if (control.type == OPERATOR && control.value[0]==EQ && EQ_SWITCH==ASSIGNMENT) {
       //single symbol.
     GLOBAL_STATE = ASSIGNMENT;
     if (working_top == 0){
-	token t1 = working_stack[0];	
+	token t1 = working_stack[0];
 	EQ_SWITCH = REGULAR;
 	GLOBAL_STATE = REGULAR;
 	expression(&current);
@@ -110,7 +110,7 @@ unsigned int execute_line(char *line_text)
 	set_variable(t1.value, &v_stack[v_top]);
       }
       else {
-	token t1 = working_stack[working_top];	
+	token t1 = working_stack[working_top];
 	//	dump_stack();
 	evaluate();
 	EQ_SWITCH = REGULAR;
@@ -126,23 +126,23 @@ unsigned int execute_line(char *line_text)
 	set_value_in_array_from(t1.value, offset, &v_stack[v_top]);
 	//top of v_stack has name, offset
       }
-      
-	
+
+
       //else it's an array (or an error)
-      
+
       //working stack top should have array name.
-      
+
       //variable stack should have parameters
       //working_top should point to array_name.
       //if symbol -
       //else if array -
       //else error
-      //name working_stack[working_top] 
+      //name working_stack[working_top]
       //if working_top is array, caluculate offset (var variable)
 
-      
-      //v_top will have integer offset and name set for assignment as variable. 
-     
+
+      //v_top will have integer offset and name set for assignment as variable.
+
       //do assignment
     }
     if(control.type == OPERATOR && control.value[0]==COLON){
@@ -151,6 +151,6 @@ unsigned int execute_line(char *line_text)
     GLOBAL_STATE=REGULAR;
     EQ_SWITCH=ASSIGNMENT;
     expression(&current);
-  }  
+  }
 }
 

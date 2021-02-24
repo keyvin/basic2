@@ -1,7 +1,9 @@
+//superseded by program.h
+
 #ifndef LINE_H
 #define LINE_H 1
 
-#define MAX_LINE_LENGTH 
+#define MAX_LINE_LENGTH
 
 //I could define my own string type still
 
