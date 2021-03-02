@@ -1,4 +1,4 @@
-#ifndef TOKENS_H 
+#ifndef TOKENS_H
 #define TOKENS_H 1
 
 #include <stdint.h>
@@ -42,7 +42,7 @@
 #define TAN 32
 #define LEN 33
 #define CHR 34    //built in functions
-#define STR 35
+//#define STR 35 Interferes with variable enum str trypes....
 #define LEFT 36
 #define RIGHT 37
 #define MID 38
@@ -85,9 +85,9 @@ typedef struct T_STRING_INFO {
 
 extern token buffer;
 extern char read_buffer[MAX_STRING];
-//pass by value 
+//pass by value
 
 uint8_t is_operator(char);
-void read(char **, token *);			  
+void read(char **, token *);
 void dump_stack();
 #endif

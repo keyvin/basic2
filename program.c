@@ -11,6 +11,47 @@ program_line *program_start = NULL;
 //should be formatted line_number - text. Otherwise should be considered immediate.
 //Likewise should be checked beforehand to ensure the length doesn't overflow.
 
+void execute() {
+    program_line *current;
+    if (program_start == NULL)
+        return;
+    current = program_start;
+    if(!program_start->line_text)
+    {
+        //set global error condition
+    }
+    line_return_type = r_ok;
+    //This is where to check for global error state and alert the user!
+    while (current != NULL && line_return_type != r_error ) {
+        execute_line(current->line_text);
+        if (line_return_type == r_ok) {
+            current = current->next;
+
+        }
+
+
+    }
+
+
+}
+
+//splits a line into a line number and a string
+unsigned int get_line_number(char **to_add){
+    char tmp_buff[10];
+    unsigned int pos = 0;
+    char *start = *to_add;
+    while (*start >= '0' && *start <='9' && *start !='\0' && pos <10 ) {
+        tmp_buff[pos] = (*to_add)[pos];
+        start++;
+        pos++;
+    }
+    tmp_buff[pos] = '\0';
+
+    *to_add = start;
+    return atoi(tmp_buff);
+}
+
+
 program_line *make_new_line(char *line_text) {
     program_line *to_make = (program_line *) malloc(sizeof(program_line));
     if (to_make == NULL){
@@ -32,11 +73,15 @@ program_line *make_new_line(char *line_text) {
 
 
 
-void add_line(line_index line_no, char *line_text) {
+void add_line(char *line_text) {
+
+    char *txt_start = line_text;
+    line_index line_no = get_line_number(&txt_start);
+
     program_line *working;
     program_line *tmp;
     working = tmp = NULL;
-    working = make_new_line(line_text);
+    working = make_new_line(txt_start);
     if (working == NULL) //error
         return;
     working->line_number = line_no;

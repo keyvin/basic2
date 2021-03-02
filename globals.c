@@ -9,3 +9,7 @@ variable v_stack[10];
 enum eq_switch EQ_SWITCH;
 enum interpreter_state GLOBAL_STATE;
 line_index current_line;
+
+enum return_type line_return_type;
+line_index next_line;
+char *return_position;

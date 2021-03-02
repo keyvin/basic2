@@ -1,5 +1,10 @@
+#ifndef PROGRAM_H
+#define PROGRAM_H 1
 #include <stdio.h>
 #include <stdint.h>
+#include "globals.h"
+
+
 #define MAX_GOSUB_DEPTH 20
 /**********
     Program is a doubly linked list. I have a lot of appreciation for including line numbers in the source.
@@ -10,10 +15,10 @@
 
 */
 
-
 typedef uint16_t line_index;
 
-enum return_type {r_next, r_goto,r_gosub,r_return, r_ok};
+
+enum return_type {r_next, r_goto,r_gosub,r_return, r_ok, r_error} ;
 
 typedef struct PROGRAM_LINE {
     line_index line_number;
@@ -22,14 +27,21 @@ typedef struct PROGRAM_LINE {
     struct PROGRAM_LINE *previous;
 } program_line;
 
+//Control flow stack - this should have FOR/WHILE/GOSUB Entries for record keeping.
+//Lookbacks for FOR/NEXT, WHILE/WEND should stop at the last gosub, and everything up to the last
+//gosub should be removed upon a return.
+//FOR and WHILE entries should not be removed in case GOTO is used to break out of the loop
+
+//should definitely check for ambiguous next... which can be avoided by specifying a variable... egads!
+
 struct SUB_STACK_ENTRY {
     line_index line;
     char *position; //position in line to resume from a gosub.
 };
 
+
 //These two are used to avoid return values/copying.
-extern enum return_type return_type;
-extern line_index next_line;
+
 
 
 typedef struct SUB_STACK_ENTRY sub_stack_entry;
@@ -38,8 +50,11 @@ extern unsigned int return_stack_top;
 extern program_line *program_start;
 
 
-void add_line(line_index, char *);
+void add_line(char *);
 //seperates line number and text.
 void process_line(char *);
 void flush_program();
 
+void execute();
+
+#endif

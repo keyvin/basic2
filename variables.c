@@ -25,7 +25,7 @@ void print_variable(variable v){
   double value;
   type = "STRING OR DOUBLE";
   switch (v.type){
-    
+
   case I:
     type = "Integer";
     value = (double)v.value.intg;
@@ -42,32 +42,33 @@ void print_variable(variable v){
     type = "Float Array";
     value = (double)v.value.ary.size;
     break;
-  }  
+  }
   printf ("variable: %s, type %s, value or length: %f\n", v.name, type, (double) value);
 }
 
 
-void copy_string_var_to_ptr(char *to, variable *var){
+char * copy_string_var_to_ptr(char *to, variable *var){
+  char *working = NULL;
   if(to != NULL)
     free(to);
-  if (var->type != STR)
-    return; //TODO -- ERROR
+  if (var->type != STRV)
+    return NULL; //TODO -- ERROR
 
       //Value is in the string buffer
   if (var->value.str.ptr==NULL){
-    to = (char *) malloc(sizeof(char)*string_buffer_position);
-    strncpy(to, string_buffer, string_buffer_position);
-    to[string_buffer_position]='\0';
+    working = (char *) malloc(sizeof(char)*string_buffer_position+1);
+    strncpy(working, string_buffer, string_buffer_position);
+    working[string_buffer_position+1]='\0';
   }
       //we are making a copy of var (this code path shouldn't be used, but it's here)
   else {
-    to = (char *) malloc(sizeof(char)*var->value.str.length);
-    strncpy(to, var->value.str.ptr, var->value.str.length);    
+    working = (char *) malloc(sizeof(char)*var->value.str.length);
+    strncpy(working, var->value.str.ptr, var->value.str.length);
   }
-  
+    return working;
 }
 
-  
+
 
 unsigned int find_next_free(){
   //find next free.
@@ -78,7 +79,7 @@ unsigned int find_next_free(){
       break;
     }
   }
-  return offset;  
+  return offset;
 }
 
 int get_array_dims(char *to_find)
@@ -87,8 +88,8 @@ int get_array_dims(char *to_find)
     if(strcmp(vars[i].name, to_find)==0){
       return vars[i].value.ary.number_of_dimensions;
       break;
-    }    
-  }      
+    }
+  }
   return 0;
 }
 
@@ -122,15 +123,15 @@ void check_copy_name(char *dest, char *name){
 uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
   if (variable_exists(name->value)!=-1){
     //error condition
-    printf("error, already exists");    
+    printf("error, already exists");
   }
 
   token t_tmp;
   strcpy(t_tmp.value,"0.0");
   t_tmp.type = FLOAT;
-  
-  variable location;    
-  populate_variable(&location, name, &t_tmp); 
+
+  variable location;
+  populate_variable(&location, name, &t_tmp);
   location.value.ary.number_of_dimensions = num_dims;
   location.value.ary.dimensions = malloc(sizeof(uint16_t)*num_dims);
   unsigned int bytes;
@@ -143,7 +144,7 @@ uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
     location.type = IA;
     bytes = sizeof(int)*size;
     break;
-  case STR:
+  case STRV:
     location.type = STRA;
     bytes = sizeof(char *)*size;
     break;
@@ -154,8 +155,8 @@ uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
   default:
     break;
     //else error
-  };   
-    
+  };
+
   location.value.ary.ptr = (void *) malloc(bytes);
   location.value.ary.size = size;
   set_variable(location.name, &location);
@@ -164,7 +165,7 @@ uint8_t dim_array(token *name, unsigned int size, uint8_t num_dims){
   print_variable(location);
   //  check_copy_name(location->name, name->value);
   return 1;
-  
+
 }
 
 uint8_t set_dimension_n(char *name, uint8_t dimension, uint16_t dimension_size) {
@@ -190,7 +191,7 @@ uint16_t get_dimension_n(char *name, uint8_t dimension){
   if (dimension > vars[offset].value.ary.number_of_dimensions)
     return 0;
   //TODO --SET ERROR
-  return vars[offset].value.ary.dimensions[dimension];    
+  return vars[offset].value.ary.dimensions[dimension];
 }
 
 /*void put_array_value_in_var(variable *a, char *b)
@@ -202,7 +203,7 @@ uint16_t get_dimension_n(char *name, uint8_t dimension){
 //call get variable first - should look like (&var_from, int offset, &var_to)
 // set global error state to out of bounds and return 0.
 
-uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *target){  
+uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *target){
   //TODO - error condition
   variable *from = find_variable(name);
   if (!from)
@@ -210,31 +211,34 @@ uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *tar
   if (index >= from->value.ary.size || index < 0){
     // out of bounds
     return 0;
-  }  
+  }
   //may not be necessary with garbage collection
   //  free_variable_by_reference(target);
   target->name[0] = '\0';
   array *ary = &from->value.ary;
+  char **ctarg = NULL;
   switch (from->type){
   case IA:
     target->type = I;
-    target->value.intg =*(((int *)ary->ptr)+index);
+    target->value.intg =*((int *)(ary->ptr+index));
     break;
   case FA:
     target->type = F;
-    target->value.sing = *(((float *)ary->ptr)+index);
+    target->value.sing = *((float *)(ary->ptr+index));
     break;
   case STRA:
     //Read into string buffer
-    target->type = STR;
+    target->type = STRV;
     target->value.str.ptr = '\0';
-    target->value.str.length = strlen(((char *)ary->ptr)+index);
-    strcpy(((char *)ary->ptr)+index, string_buffer+string_buffer_position);
+    ctarg = (char **)ary->ptr;
+    printf("%s\n", ctarg[index]);
+    target->value.str.length = strlen(ctarg[index]);
+    strcpy(string_buffer+string_buffer_position, ctarg[index]);
     string_buffer_position += target->value.str.length;
     break;
   case DA:
     target->type = D;
-    target->value.dubl = *(((double *)ary->ptr)+index);
+    target->value.dubl = *((double *)(ary->ptr)+index);
     break;
   default:
       break;
@@ -249,6 +253,7 @@ uint8_t get_value_from_array_into(char *name, unsigned int index,  variable *tar
 uint8_t set_value_in_array_from(char *name, unsigned int index, variable *from) {
   //may not be necessary with garbage collection
   //definitely necessary with strings.
+  char **wrk;
   variable *target = find_variable(name);
   if(!target){
     printf("not found\n");
@@ -260,24 +265,26 @@ uint8_t set_value_in_array_from(char *name, unsigned int index, variable *from) 
    // out of bounds
     return 0;
   }
-  
-  auto_convert(target, from);  
+
+  auto_convert(target, from);
   //strings
   array *ary = &target->value.ary;
   switch (target->type){
   case IA:
-      *(((int *)ary->ptr)+index) = from->value.intg;
+      *((int *)(ary->ptr+index)) = from->value.intg;
       break;
   case FA:
-    *(((float *)ary->ptr)+index) = from->value.sing;
+    *((float *)(ary->ptr+index)) = from->value.sing;
     break;
   case STRA:
-    //need to make a copy
-    copy_string_var_to_ptr(((char *) ary->ptr)+index, from);
+    //need to make a copy -  swear to god.. I need to re-do this code with a union of pointer types - char **, int ** float ** double **... this is a god awful mess
+    wrk = ary->ptr;
+    wrk[index] = copy_string_var_to_ptr((char *) wrk[index], from);
+
     //target->value.str->ptr = '\0';
     //target->value.str->len = 0;
     break;
-  case D:
+  case DA:
     // target->type = D;
     //      target->value.dubl = *(((double *)ary->ptr)+index);
     break;
@@ -307,14 +314,14 @@ variable *find_variable(char *to_find)
     if (strcmp(vars[i].name, to_find)==0)
       return &vars[i];
   }
-  return NULL;  
+  return NULL;
 }
 
 variable *set_variable(char *to_set, variable *var)
 {
   if (num_vars == MAX_VARS)
     return NULL;
-  int offset = variable_exists(to_set);  
+  int offset = variable_exists(to_set);
   //find next free.
   if (offset == -1)
     for (int i=0;i< MAX_VARS; i++){
@@ -323,11 +330,25 @@ variable *set_variable(char *to_set, variable *var)
 	break;
       }
     }
-  
+
   if (offset !=-1){
-    if (vars[offset].type==STR){	
+    if (var->type==STRV){
+      vars[offset].type = STRV;
       if (vars[offset].value.str.ptr)
-	free(vars[offset].value.str.ptr);
+        free(vars[offset].value.str.ptr);
+      if (var->value.str.ptr) {
+        vars[offset].value.str.ptr = (char *)malloc(var->value.str.length+1);
+        strncpy(vars[offset].value.str.ptr, var->value.str.ptr, var->value.str.length);
+        strcpy(vars[offset].name, to_set);
+      }
+      else{
+      //read from string buffer
+        vars[offset].value.str.ptr = (char *)malloc(sizeof(char)*string_buffer_position+1);
+        strncpy(vars[offset].value.str.ptr, string_buffer,string_buffer_position);
+        vars[offset].value.str.length = string_buffer_position;
+        vars[offset].value.str.ptr[string_buffer_position]='\0';
+        strcpy(vars[offset].name, to_set);
+      }
       return &vars[offset];
     }
     else if (vars[offset].type==IA || vars[offset].type == FA || vars[offset].type==STRA || vars[offset].type==DA) {
@@ -350,12 +371,12 @@ variable *set_variable(char *to_set, variable *var)
 
 
 
-//Anonymous strings 
+//Anonymous strings
 
 void fill_string_from_token(variable *var, token *token1){
-  var->type = STR;    
+  var->type = STRV;
   unsigned int length = ((t_string_info *)token1->value)->length+1;
-  char *str_ptr = ((t_string_info *)token1->value)->start;      
+  char *str_ptr = ((t_string_info *)token1->value)->start;
   var->value.str.ptr = (char *) malloc(sizeof(char)*length);
   var->value.str.length = length;
   strncpy(var->value.str.ptr,str_ptr, length);
@@ -375,20 +396,20 @@ void read_anonymous_variable(variable *var, token *token1)
     var->value.sing = read_float(token1->value);
     break;
   case STRING:
-    var->type = STR;        
+    var->type = STRV;
     var->value.str.ptr = '\0';
     var->value.str.length = ((t_string_info *) token1->value)->length;
     strncpy(string_buffer+string_buffer_position, ((t_string_info *) token1->value)->start, var->value.str.length);
     string_buffer_position += var->value.str.length;
     break;
   default:
-    var->type = INV;    
+    var->type = INV;
   }
   var->name[0]='\0';
 }
 
 
-           
+
 uint8_t populate_variable(variable *var, token *token1 , token *token2)
 {
   //assume token1 is a variable name. If the last char is $, %, ! or alpha matters. First char of name is type.....
@@ -412,14 +433,14 @@ uint8_t populate_variable(variable *var, token *token1 , token *token2)
     if (token2->type == STRING)
       fill_string_from_token(var,token2);
     else
-      var->type=STR;
+      var->type=STRV;
     break;
   default:
     var->value.sing = read_float(token2->value);
     var->type = F;
     break;
   }
-  strcpy(var->name, token1->value);      
+  strcpy(var->name, token1->value);
   return 1;
 }
 
@@ -453,10 +474,10 @@ void auto_convert(variable *a, variable *b){
   }
   else {
     //TODO - error condition, can only autoconvert between int and float
-    return;  
+    return;
   }
 }
-    
+
 
 /*replace with my own*/
 float read_float(char *s)

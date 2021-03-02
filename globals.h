@@ -8,6 +8,7 @@
 //emacchar reserved_words[][] = {"AND", "OR", "NOT", "IF", "THEN", "GOTO", "GOSUB", "END", "FOR", "NEXT", "WHILE", "WEND"}
 
 #define STRING_BUFF_SIZE 1024
+typedef uint16_t line_index;
 extern unsigned int string_buffer_position;
 extern line_index current_line;
 extern char string_buffer[STRING_BUFF_SIZE];
@@ -23,11 +24,16 @@ enum eq_switch {ASSIGNMENT, NON_ASSIGNMENT};
 extern enum eq_switch EQ_SWITCH;
 extern enum interpreter_state GLOBAL_STATE;
 variable evaluate();
-unsigned int execute_line(char *);
+void execute_line(char *);
 void dump_token(token );
 
 void convert_stack_to_int_below_n(unsigned int n);
 unsigned int calculate_array_size();
+
+//Globals used to convey the results of executing a line to the executor function.
+extern enum return_type line_return_type;
+extern line_index next_line;
+extern char *return_position;
 
 
 #endif

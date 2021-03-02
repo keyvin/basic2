@@ -7,8 +7,10 @@
 variable evaluate();
 
 //If I were to allow nesting ifs, have if counter
-//returns line_no to execute next
-unsigned int execute_line(char *line_text)
+
+//should set line_return_type, next_line, and position in the current line it returned from.
+
+void execute_line(char *line_text)
 {
   //we sometimes double read. Oh well
   token t1;
@@ -25,10 +27,16 @@ unsigned int execute_line(char *line_text)
       printf("in print\n");
       expression(&current);
       evaluate();
-
-      if (v_stack[0].type == STRV || v_stack) {
-	string_buffer[string_buffer_position+1] = '\0';
-	printf("%s\n", string_buffer);
+      if (v_top != 0) {
+        printf("v_top not zero for print \n");
+      }
+      if (v_stack[v_top].type == STRV) {
+        if(v_stack[v_top].value.str.ptr)
+            printf("%s\n",v_stack[v_top].value.str.ptr);
+         else {
+        string_buffer[string_buffer_position+1] = '\0';
+        printf("%s\n", string_buffer);
+        }
       }
 
     }
@@ -69,7 +77,7 @@ unsigned int execute_line(char *line_text)
       }
     }
     if (control.type == FLOW && control.value[0] == ELSE)
-      return 0;
+      return;
 
     if (control.type == FLOW && control.value[0] == FOR) { }
     //assignment. Set up stack. Get PTR to read/write address
@@ -119,7 +127,7 @@ unsigned int execute_line(char *line_text)
 	expression(&current);
 	//	dump_stack();
 	evaluate();
-	if (v_stack[v_top].type==STR)
+	if (v_stack[v_top].type==STRV)
 	  printf("ARRAY ASSIGNMENT %s(%d)=%s\n", t1.value, offset, string_buffer);
 	else
 	  printf("ARRAY ASSIGNMENT %s(%d)=%f\n", t1.value, offset, (v_stack[v_top].type==I)? (float)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
@@ -127,23 +135,6 @@ unsigned int execute_line(char *line_text)
 	//top of v_stack has name, offset
       }
 
-
-      //else it's an array (or an error)
-
-      //working stack top should have array name.
-
-      //variable stack should have parameters
-      //working_top should point to array_name.
-      //if symbol -
-      //else if array -
-      //else error
-      //name working_stack[working_top]
-      //if working_top is array, caluculate offset (var variable)
-
-
-      //v_top will have integer offset and name set for assignment as variable.
-
-      //do assignment
     }
     if(control.type == OPERATOR && control.value[0]==COLON){
       //ends statements. Not appearing before a then for instance, is an error.
@@ -152,5 +143,10 @@ unsigned int execute_line(char *line_text)
     EQ_SWITCH=ASSIGNMENT;
     expression(&current);
   }
+  //set globals for return from end of line (proceed to next)
+  line_return_type = r_ok;
+  next_line = 0;
+  return_position = NULL;
+
 }
 
