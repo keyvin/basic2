@@ -10,13 +10,25 @@
 #define VARNAME_MAX 8
 
 
-//First char of varname is type (i, s, 
+//First char of varname is type (i, s,
 
 enum VAR_types { F, I, D, STRV, IA, FA, DA, STRA, FV,INV};
 typedef enum VAR_types var_types;
 
+//why do a lot of complicated casts when C provides a mechanism...
+
+
+typedef union ARRAY_POINTERS { char **s;
+    int *i;
+    float *f;
+    double *d;} array_pointer;
+
+//Important note about string arrays, null termination, and unbounded functions (strlen, strcpy, printf) -
+//The code for updating and setting a string should properly null terminate. If it doesn't, it is a bug
+//in my code.
+
 typedef struct ARRAY {
-  void *ptr;
+  array_pointer ptr;
   unsigned int size;
   uint8_t number_of_dimensions;
   uint16_t *dimensions;
@@ -87,7 +99,7 @@ double get_double_value(char *);
 void put_string_in_buffer(char *);
 void append_string_to_buffer(char *);
 void free_by_name(char *);
-void free_by_number(int);	 		 
+void free_by_number(int);
 uint8_t populate_variable(variable *, token *, token *);
 uint8_t dim_array(token *name, unsigned int size, uint8_t);
 uint8_t get_value_from_array_into(char *name, unsigned int offset, variable *);
