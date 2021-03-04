@@ -62,11 +62,16 @@ unsigned int calculate_array_size() {
 }
 
 unsigned int calculate_array_offset(unsigned int number_of_dimensions, int i){
+  unsigned int accumulator = 0;
   if (v_top - number_of_dimensions <0)
     //TODO - Set ERROR
     return(0);
+  if (number_of_dimensions ==1) {
+    convert_variable_to_int(&v_stack[v_top]);
+    accumulator = v_stack[v_top].value.intg;
 
-  unsigned int accumulator = 0;
+  }
+
   for (int ic = 0; ic < (number_of_dimensions-1); ic++){
     convert_variable_to_int(&v_stack[v_top-ic]);
     //TODO - ERROR CONDITION, OUTSIDE BOUNDS
@@ -191,25 +196,18 @@ variable  evaluate(){
       //calculates index with top N elements, and pushes result to top of stack
     else if(working_stack[i].type == ARRAY){
       //create or access?
-      if (GLOBAL_STATE==IN_DIM && i==working_top){
-	//nothing else should follow this statement other than : or \n.
+        if (GLOBAL_STATE==IN_DIM && i==working_top){
+        //nothing else should follow this statement other than : or \n.
 	//stack should contain N values that constitute the number of dimensions
 	return v_stack[v_top];
-      }
+        }
       int number_of_dimensions = get_array_dims(working_stack[i].value);
       printf("array %s, get_array_dims: %d\n", working_stack[i].value, number_of_dimensions);
 
-      unsigned int accumulator = calculate_array_offset(number_of_dimensions, i);
-      //special code for array assignments. Just sets zero.
-      if (GLOBAL_STATE==ASSIGNMENT){
-        //will be an error, undimmed array.
-	v_top -= number_of_dimensions-1;
-	printf("dims calculated to %d\n", accumulator);
-	v_stack[v_top].value.intg = accumulator;
-	v_stack[v_top].type = i;
-        return(v_stack[v_top]);
+      //special code for array assignments. Returns before evaluating final value.
 
-      }
+      unsigned int accumulator = calculate_array_offset(number_of_dimensions, i);
+
       //else fetch
       v_top-=number_of_dimensions-1;
       get_value_from_array_into(working_stack[i].value ,accumulator, &v_stack[v_top]);
@@ -244,6 +242,14 @@ variable  evaluate(){
       read_anonymous_variable(&v_stack[++v_top], &working_stack[i]);
     }
    //convert and put on the stack.
+     if (GLOBAL_STATE==ASSIGNMENT && i==working_top-1){
+        //will be an error, undimmed array.
+	//v_top -= number_of_dimensions-1;
+        convert_variable_to_int(&v_stack[v_top]);
+        printf("dims calculated to %d\n", v_stack[v_top].value.intg);
+        return(v_stack[v_top]);
+
+      }
   }
   return v_stack[v_top];
 }

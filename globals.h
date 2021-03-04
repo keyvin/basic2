@@ -4,6 +4,7 @@
 #include "variables.h"
 #include "tokens.h"
 #include "program.h"
+//TODO - IS IT POSSIBLE FOR STRINGSD ON THE EVALUATION VARIABLE STACK TO RESULT IN MEMORY LEAK?
 
 //emacchar reserved_words[][] = {"AND", "OR", "NOT", "IF", "THEN", "GOTO", "GOSUB", "END", "FOR", "NEXT", "WHILE", "WEND"}
 
