@@ -20,6 +20,7 @@ typedef uint16_t line_index;
 
 enum return_type {r_next, r_goto,r_gosub,r_return, r_ok, r_error} ;
 
+
 typedef struct PROGRAM_LINE {
     line_index line_number;
     char *line_text;
@@ -34,19 +35,21 @@ typedef struct PROGRAM_LINE {
 
 //should definitely check for ambiguous next... which can be avoided by specifying a variable... egads!
 
-struct SUB_STACK_ENTRY {
+typedef enum CF_STACK {cf_for, cf_gosub, cf_while} cf_stack_type;
+
+struct CF_STACK_ENTRY {
+    cf_stack_type cf_type;
     line_index line;
     char *position; //position in line to resume from a gosub.
 };
-
 
 //These two are used to avoid return values/copying.
 
 
 
-typedef struct SUB_STACK_ENTRY sub_stack_entry;
-extern sub_stack_entry return_stack[MAX_GOSUB_DEPTH];
-extern unsigned int return_stack_top;
+typedef struct CF_STACK_ENTRY cf_stack_entry;
+extern cf_stack_entry control_flow_stack[MAX_GOSUB_DEPTH];
+extern unsigned int cf_stack_top;
 extern program_line *program_start;
 
 
