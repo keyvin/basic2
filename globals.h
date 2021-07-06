@@ -7,7 +7,6 @@
 //TODO - IS IT POSSIBLE FOR STRINGSD ON THE EVALUATION VARIABLE STACK TO RESULT IN MEMORY LEAK?
 
 //emacchar reserved_words[][] = {"AND", "OR", "NOT", "IF", "THEN", "GOTO", "GOSUB", "END", "FOR", "NEXT", "WHILE", "WEND"}
-
 #define STRING_BUFF_SIZE 1024
 typedef uint16_t line_index;
 extern unsigned int string_buffer_position;
@@ -30,11 +29,12 @@ void dump_token(token );
 
 void convert_stack_to_int_below_n(unsigned int n);
 unsigned int calculate_array_size();
-
 //Globals used to convey the results of executing a line to the executor function.
 extern enum return_type line_return_type;
 extern line_index next_line;
 extern char *return_position;
+//this struct contains interpreter state information that should be saved to the stack.
+
 
 
 #endif

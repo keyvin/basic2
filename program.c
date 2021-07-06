@@ -3,14 +3,12 @@
 #include "ctype.h"
 #include <string.h>
 
+//A line should execut
 
 
 program_line *program_start = NULL;
-
-
 //should be formatted line_number - text. Otherwise should be considered immediate.
 //Likewise should be checked beforehand to ensure the length doesn't overflow.
-
 void execute() {
     program_line *current;
     if (program_start == NULL)
@@ -26,13 +24,19 @@ void execute() {
         execute_line(current->line_text);
         if (line_return_type == r_ok) {
             current = current->next;
-
         }
-
-
+        if (line_return_type == r_goto) {
+            //TODO check if ERROR was set - invalid line number.
+            program_line *tmp = current;
+            while (tmp->next !=NULL && next_line <= tmp->line_number)
+            if (tmp->line_number == next_line){
+                current = tmp;
+            }
+            else {
+                line_return_type == r_error;
+            }
+        }
     }
-
-
 }
 
 //splits a line into a line number and a string
