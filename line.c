@@ -45,6 +45,12 @@ void line_handle_print(char **line_text) {
             printf("%s\n", string_buffer);
         }
     }
+    else if (v_stack[v_top].type == I) {
+        printf("%d\n", v_stack[v_top].value.intg);
+    }
+    else if (v_stack[v_top].type == F) {
+        printf("%f\n", v_stack[v_top].value.sing);
+    }
     *line_text = current;
 }
 
@@ -59,6 +65,7 @@ void line_handle_goto(char **line_text)
     }
     else {
         next_line = 32001;
+        line_return_type = r_error;
     }
     line_return_type = r_goto;
     next_line = 0;
@@ -122,6 +129,7 @@ void execute_line(char *line_text)
                 line_handle_print(&current);
                 break;
             case IF:
+                printf("IF\n");
                 line_handle_if(&current);
                 break;
             case ELSE:

@@ -27,8 +27,10 @@ void execute() {
         }
         if (line_return_type == r_goto) {
             //TODO check if ERROR was set - invalid line number.
-            program_line *tmp = current;
-            while (tmp->next !=NULL && next_line <= tmp->line_number)
+            printf("GOTO\n");
+            program_line *tmp = program_start;
+            while (tmp->next !=NULL && next_line != tmp->line_number)
+                tmp = tmp->next;
             if (tmp->line_number == next_line){
                 current = tmp;
             }
@@ -115,7 +117,7 @@ void add_line(char *line_text) {
     }
     tmp = program_start;
     //scan list, find element we will insert at in tmp
-    while (tmp->next !=NULL && line_no <= tmp->line_number)
+    while (tmp->next !=NULL && line_no >= tmp->line_number)
         tmp = tmp->next;
     if (tmp->line_number == line_no){
         //replace here
@@ -137,7 +139,7 @@ void add_line(char *line_text) {
         return;
     }
     //insert just before this element
-    if (tmp->line_number > line_no) {
+    if(tmp->line_number > line_no) {
         working->previous = tmp->previous;
         tmp->previous->next = working;
         working->next = tmp;
