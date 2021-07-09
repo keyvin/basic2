@@ -11,6 +11,7 @@ program_line *program_start = NULL;
 //Likewise should be checked beforehand to ensure the length doesn't overflow.
 void execute() {
     program_line *current;
+    char *ret = NULL;
     if (program_start == NULL)
         return;
     current = program_start;
@@ -21,7 +22,7 @@ void execute() {
     line_return_type = r_ok;
     //This is where to check for global error state and alert the user!
     while (current != NULL && line_return_type != r_error ) {
-        execute_line(current->line_text);
+        ret = execute_line(current->line_text);
         if (line_return_type == r_ok) {
             current = current->next;
         }
@@ -38,6 +39,20 @@ void execute() {
                 line_return_type == r_error;
             }
         }
+        if (line_return_type == r_gosub) {
+            //push current_line and ret to gosub stack
+
+        }
+        if (line_return_type == r_return){
+            //Pop everything back to the last gosub. If no gosub, error
+        }
+        if (line_return_type == r_next){
+
+        }
+        if (line_return_type == r_for){
+
+        }
+
     }
 }
 

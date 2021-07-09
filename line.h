@@ -12,7 +12,7 @@ typedef struct LINE {
   char line[256];
 }
 
-void execute_line(char * );
+char *execute_line(char * );
 
 
 #endif

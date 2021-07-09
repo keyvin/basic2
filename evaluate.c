@@ -82,12 +82,13 @@ unsigned int calculate_array_offset(unsigned int number_of_dimensions, int i){
 
 //what to do about not. write to stack with low or high precedence?
 //Not all operators decrement stack....
+//TODO-IMPLICIT TYPE CONVERSION
 void do_operator(uint8_t t)
 {
   double accum = 0;
   double accum2 = 0;
   //will need another operator table for strings.
-
+  uint8_t is_int=0;
   // assume integer if not float (fix later for double and string...)
   if (!(is_operable(&v_stack[v_top]) && is_operable(&v_stack[v_top-1]))){
       //TODO-ERROR CONDITION, CANNOT OPERATE DIRECTLY ON ARRAYS
@@ -119,54 +120,65 @@ void do_operator(uint8_t t)
 
   if (v_stack[v_top].type == F)
     accum = v_stack[v_top].value.sing;
-  else
-    accum = v_stack[v_top].value.intg;
+  else {
+      accum = v_stack[v_top].value.intg;
+      is_int++;
+  }
   if (v_stack[v_top-1].type == I){
     accum2 = v_stack[v_top-1].value.intg;
+    is_int++;
   }
   else
     accum2 = v_stack[v_top-1].value.sing;
-  v_stack[v_top-1].type = F;
   switch (t){
 
   case PLUS:
-    v_stack[--v_top].value.sing = accum2 + accum;
+    accum = accum2 + accum;
     break;
   case MINUS:
-    v_stack[--v_top].value.sing = accum2 - accum;
+    accum = accum2 - accum;
     break;
   case MULTIPLY:
-    v_stack[--v_top].value.sing = accum2 * accum;
+    accum = accum2 * accum;
     break;
   case DIVIDE:
-    v_stack[--v_top].value.sing = accum2 / accum;
+    accum = accum2 / accum;
     break;
   case POWER:
-    v_stack[--v_top].value.sing = 7007;
+    accum = 7007;
     break;
   case AND:
-    v_stack[--v_top].value.sing = (accum && accum2) ? 1: 0;
+    accum = (accum && accum2) ? 1: 0;
     break;
   case OR:
-    v_stack[--v_top].value.sing = (accum || accum2) ? 1:0;
+    accum = (accum || accum2) ? 1:0;
     break;
   case GT:
-    v_stack[--v_top].value.sing = (accum < accum2) ? 1:0;
+    accum = (accum < accum2) ? 1:0;
     break;
   case LT:
-    v_stack[--v_top].value.sing = (accum > accum2) ? 1:0;
+    accum = (accum > accum2) ? 1:0;
   case GTE:
-    v_stack[--v_top].value.sing = (accum <= accum2) ? 1:0;
+    accum = (accum <= accum2) ? 1:0;
     break;
   case NOT_EQ:
-    v_stack[--v_top].value.sing = (accum != accum2) ? 1:0;
+    accum = (accum != accum2) ? 1:0;
     break;
   case EQ:
-    v_stack[--v_top].value.sing = (accum==accum2) ? 1:0;
+    accum = (accum==accum2) ? 1:0;
+    break;
   default:
     break;
   }
-
+    v_top--;
+    if (is_int ==2) {
+        v_stack[v_top].value.intg = (int) accum;
+        v_stack[v_top].type = I;
+    }
+    else {
+        v_stack[v_top].value.sing = (float) accum;
+        v_stack[v_top].type = F;
+    }
 
 }
 

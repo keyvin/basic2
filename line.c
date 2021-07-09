@@ -110,7 +110,20 @@ void line_handle_if(char **line_text)
     *line_text = current;
 }
 
-void execute_line(char *line_text)
+void line_handle_return(char **line_text) {
+    char *current = *line_text;
+
+    r_return_type = r_return;
+    *line_text = current;
+}
+
+void line_handle_gosub(char **line_text){
+    char *current = *line_text;
+    r_return_type = r_gosub;
+    *line_text = current;
+}
+
+char *execute_line(char *line_text)
 {
   //we sometimes double read. Oh well
   token t1;
@@ -141,6 +154,12 @@ void execute_line(char *line_text)
                 break;
             case DIM:
                 line_handle_dim(&current);
+                break;
+            case RETURN:
+                line_handle_return(&current);
+                break;
+            case GOSUB:
+                line_handle_gosub(&current);
                 break;
             default:
                 //TODO - ERROR

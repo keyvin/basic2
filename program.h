@@ -43,6 +43,10 @@ struct CF_STACK_ENTRY {
     char *position; //position in line to resume from a gosub.
 };
 
+struct CF_STACK_FOR {
+    char *ret_pos
+    line_index;
+}
 //These two are used to avoid return values/copying.
 
 
