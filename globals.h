@@ -24,7 +24,7 @@ enum eq_switch {ASSIGNMENT, NON_ASSIGNMENT};
 extern enum eq_switch EQ_SWITCH;
 extern enum interpreter_state GLOBAL_STATE;
 variable evaluate();
-void execute_line(char *);
+char* execute_line(char *);
 void dump_token(token );
 
 void convert_stack_to_int_below_n(unsigned int n);

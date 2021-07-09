@@ -68,7 +68,7 @@ void line_handle_goto(char **line_text)
         line_return_type = r_error;
     }
     line_return_type = r_goto;
-    next_line = 0;
+
     return_position = NULL;
 }
 
@@ -112,14 +112,22 @@ void line_handle_if(char **line_text)
 
 void line_handle_return(char **line_text) {
     char *current = *line_text;
-
-    r_return_type = r_return;
+    line_return_type = r_return;
     *line_text = current;
 }
 
 void line_handle_gosub(char **line_text){
     char *current = *line_text;
-    r_return_type = r_gosub;
+    line_return_type = r_gosub;
+    token line_number;
+    read(&current, &line_number);
+    if (line_number.type == INTEGER) {
+        next_line = atoi(line_number.value);
+    }
+    else {
+        next_line = 32001;
+        line_return_type = r_error;
+    }
     *line_text = current;
 }
 
@@ -133,6 +141,7 @@ char *execute_line(char *line_text)
   EQ_SWITCH = ASSIGNMENT;
   current=previous=line_text;
   //will set control to next....
+
   expression(&current);
   while(control.type != EOL && control.type != ERROR && *current!='\0'){
 
@@ -146,9 +155,10 @@ char *execute_line(char *line_text)
                 line_handle_if(&current);
                 break;
             case ELSE:
-                return;
+                return NULL;
             case GOTO:
                 line_handle_goto(&current);
+                return(current);
                 break;
             case FOR:
                 break;
@@ -157,15 +167,18 @@ char *execute_line(char *line_text)
                 break;
             case RETURN:
                 line_handle_return(&current);
+                return current;
                 break;
             case GOSUB:
                 line_handle_gosub(&current);
+                return(current);
                 break;
             default:
                 //TODO - ERROR
-                return;
+                return NULL;
         }
     }
+    //check if end of line following flow
 
 
     if (control.type == OPERATOR && control.value[0]==EQ && EQ_SWITCH==ASSIGNMENT) {
@@ -213,5 +226,6 @@ char *execute_line(char *line_text)
   line_return_type = r_ok;
   next_line = 0;
   return_position = NULL;
+  return current;
 }
 

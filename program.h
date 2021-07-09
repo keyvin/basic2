@@ -5,7 +5,7 @@
 #include "globals.h"
 
 
-#define MAX_GOSUB_DEPTH 20
+#define MAX_CONTROL_STACK 20
 /**********
     Program is a doubly linked list. I have a lot of appreciation for including line numbers in the source.
     Not only did it allow simple program flow, it made BASIC easy to edit in line orientied editors like
@@ -18,7 +18,7 @@
 typedef uint16_t line_index;
 
 
-enum return_type {r_next, r_goto,r_gosub,r_return, r_ok, r_error} ;
+enum return_type {r_next, r_goto,r_gosub,r_return, r_ok, r_error, r_for} ;
 
 
 typedef struct PROGRAM_LINE {
@@ -35,25 +35,23 @@ typedef struct PROGRAM_LINE {
 
 //should definitely check for ambiguous next... which can be avoided by specifying a variable... egads!
 
-typedef enum CF_STACK {cf_for, cf_gosub, cf_while} cf_stack_type;
+typedef enum CF_STACK {cf_none, cf_for, cf_gosub, cf_while} cf_stack_type;
 
 struct CF_STACK_ENTRY {
     cf_stack_type cf_type;
-    line_index line;
-    char *position; //position in line to resume from a gosub.
+    line_index return_line;
+    char *position; //OPTIMIZATION - SPACE SAVINGS TO USE INT OFFSET
+    variable *for_var;
 };
 
-struct CF_STACK_FOR {
-    char *ret_pos
-    line_index;
-}
+
 //These two are used to avoid return values/copying.
 
 
 
 typedef struct CF_STACK_ENTRY cf_stack_entry;
-extern cf_stack_entry control_flow_stack[MAX_GOSUB_DEPTH];
-extern unsigned int cf_stack_top;
+extern cf_stack_entry cflow_stack[MAX_CONTROL_STACK];
+extern  int cf_stack_top;
 extern program_line *program_start;
 
 

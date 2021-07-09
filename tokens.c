@@ -28,7 +28,7 @@ uint8_t is_operator(char val)
   case '-':
     return MINUS;
   case '/':
-    return DIVIDE;    
+    return DIVIDE;
   case '*':
     return MULTIPLY;
   case '^':
@@ -53,11 +53,11 @@ uint8_t is_operator(char val)
     return 0;
   }
   return 0;
-    
+
 }
 
-    
-  
+
+
 /*
   if (val == '+' || val == '-' || val =='/' || val == '*' || val == '^' || val =='(' || val == ')' || val == '<' || val == '>'|| val == '='|| val ==':' ||val ==';')
     return 1;
@@ -80,9 +80,12 @@ uint8_t reserved_symbol(token *sym){
   uint8_t match = 0;
   for (uint8_t a =0; a < STR_MATCH_NUM; a++){
     if (strcmp(STR_TO_TOKEN[a], sym->value)==0){
-
+      if (a==13){
+        int n=0;
+        n++;
+     }
       if (a<3){
-	sym->type = OPERATOR; 
+	sym->type = OPERATOR;
 	sym->value[0] = STR_MATCH[a];
       }
       else {
@@ -101,11 +104,11 @@ uint8_t reserved_symbol(token *sym){
 //modifies pointer passed in so there is no need to keep track
 void read(char **string, token *token) {
   char *ptr = *string;
-  uint8_t count = 0; 
+  uint8_t count = 0;
   uint8_t isint = 0;
   uint8_t deciread = 0;
   uint8_t eread = 0;
-  //Return an end of line 
+  //Return an end of line
   if (*ptr == '\0' || *ptr=='\n'){
     token->type = EOL;
     goto EXIT;
@@ -125,7 +128,7 @@ void read(char **string, token *token) {
     token->value[0]= isint;
     token->type = OPERATOR;
     //needed at the bottom of the loop
-    count++; 
+    count++;
     ptr++;
     if (isint == LT){
       if (*ptr == '>'){
@@ -142,7 +145,7 @@ void read(char **string, token *token) {
 	token->value[0] = GTE;
 	ptr++;
       }
-    }        
+    }
     goto EXIT;
   }
   //starts with int?
@@ -150,7 +153,7 @@ void read(char **string, token *token) {
     isint = 1;
   //compare start to position to determine lenth until end of string or space
   while(count < MAX_TOKEN_LENGTH && *ptr != '\0' && *ptr !=' ' &&  !is_operator(*ptr)){
-    
+
     if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')){
       //error - token started with numeral
       if (isint){
@@ -160,7 +163,7 @@ void read(char **string, token *token) {
 	  else
 	    eread=1;
 	else
-	  goto ERROR;           
+	  goto ERROR;
       }
     }
     if (*ptr == '.'){
@@ -181,12 +184,12 @@ void read(char **string, token *token) {
 	else if (isint)
 	  token->type = INTEGER;
 	else
-	  token->type = SYMBOL;	    	    
-	  
+	  token->type = SYMBOL;
+
  EXIT:
 	token->value[count] = '\0';
 	if (token->type == SYMBOL){
-	  reserved_symbol(token);	  
+	  reserved_symbol(token);
 	  if(*ptr=='('){
 	    token->type = ARRAY;
 
@@ -194,14 +197,14 @@ void read(char **string, token *token) {
 	      token->type = FUNCTION;
 	      token->value[0] = isint-1;
 	    }
-	      
-	  }	      
+
+	  }
 	}
 	if(token->type == STRING){
 	  ptr++;
 	  char *start = ptr;
 	  while (*ptr != '"' &&  *ptr!= '\n' && *ptr != '\0')
-	    ptr++;	  
+	    ptr++;
 	  if (*ptr=='\n' || *ptr=='\0')
 	    goto ERROR;
 	  t_string_info *info = (t_string_info *)(token->value);
@@ -214,21 +217,21 @@ void read(char **string, token *token) {
 	return;
  ERROR:
 	strcpy(token->value, TOKEN_ERROR_1);
-	token->type = INVALID;	
+	token->type = INVALID;
 	return;
 }
-    
+
 
 void dump_token(token to_dump)
 {
 
   switch (to_dump.type)   {
-  case FLOAT:  
+  case FLOAT:
   case INTEGER:
   case SYMBOL:
     printf("SYMBOL:   %s\n", to_dump.value);
     break;
-    
+
   case ERROR:
     printf("ERROR\n");
     break;
@@ -246,21 +249,21 @@ void dump_token(token to_dump)
   case ARRAY:
     printf("ARRAY OR FUNCTION %s\n", to_dump.value);
     break;
-    
+
   default:
     break;
   }
 
-}    
+}
 
 
 void dump_stack(){
   printf("stack contents:\n");
-  for (int b=0; b<=working_top; b++){    
+  for (int b=0; b<=working_top; b++){
     dump_token(working_stack[b]);
   }
 }
-  
+
 
 
 

@@ -35,13 +35,14 @@
 #define ELSE 25
 #define GOTO 26
 #define GOSUB 27
-#define PRINT 28
-#define DIM 29
-#define COS 30
-#define SIN 31
-#define TAN 32
-#define LEN 33
-#define CHR 34    //built in functions
+#define RETURN 28
+#define PRINT 29
+#define DIM 30
+#define COS 31
+#define SIN 32
+#define TAN 33
+#define LEN 34
+#define CHR 35    //built in functions
 //#define STR 35 Interferes with variable enum str trypes....
 #define LEFT 36
 #define RIGHT 37
@@ -51,11 +52,11 @@
 
 #define FLOW_START 20
 
-#define STR_MATCH_NUM 13
+#define STR_MATCH_NUM 14
 
-static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "ELSE", "FOR", "NEXT", "TO", "GOTO", "GOSUB", "PRINT", "DIM"};
+static char *STR_TO_TOKEN[STR_MATCH_NUM] = { "AND", "OR", "NOT", "IF", "THEN", "ELSE", "FOR", "NEXT", "TO", "GOTO", "GOSUB", "PRINT", "DIM", "RETURN"};
 
-static int STR_MATCH[] = {AND, OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, GOTO, GOSUB, PRINT, DIM};
+static int STR_MATCH[] = {AND, OR, NOT, IF, THEN, ELSE, FOR, NEXT, TO, GOTO, GOSUB, PRINT, DIM, RETURN};
 
 #define NUM_FUNCTIONS 8
 static char *FUNCTION_MATCH[] = {"COS", "SIN", "TAN", "LEN", "RND", "LEFT$", "RIGHT$", "CHR$"};

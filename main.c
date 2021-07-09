@@ -24,7 +24,14 @@ int main(int argv, char **argc)
   //add_line("10 DIM f$(10): a$ =\"hello world\": PRINT a$: f$(0)=a$: c$=f$(0): f$(0)=\"again\":PRINT f$(0)+\"Hello World\"");
 //  add_line("20 HI=1:HO=1+HI: DIM FO(10): FO(1)=HO: FO(0)=FO(1):PRINT FO(0): FO(3)=3: FO(FO(3))=3:PRINT FO(3)");
   add_line("25 P%=10");
-  add_line("26 IF P%>5 THEN P%=P%-1:GOTO 25: ELSE PRINT P%");
+  add_line("26 IF P%>5 THEN P%=P%-1:GOTO 26: ELSE PRINT P%");
+  add_line("27 IF P%>3 THEN GOSUB 30:GOTO 27 ELSE PRINT P%");
+  add_line("28 GOTO 50");
+  add_line("30 P%=P%-1: GOSUB 42: RETURN ");
+  add_line("50 P%=0");
+  add_line("42 PRINT P%: RETURN ");
+
+
   //add_line("PRINT \"FINISHED\"");
   //add_line("30 PRINT f$(0)+\" \"");
  //char *taktak = "DIM X(5, 5, 5): X(1*4,2,4)=6+2";
