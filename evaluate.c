@@ -214,7 +214,7 @@ variable  evaluate(){
 	return v_stack[v_top];
         }
       int number_of_dimensions = get_array_dims(working_stack[i].value);
-      printf("array %s, get_array_dims: %d\n", working_stack[i].value, number_of_dimensions);
+//      printf("array %s, get_array_dims: %d\n", working_stack[i].value, number_of_dimensions);
 
       //special code for array assignments. Returns before evaluating final value.
 
@@ -223,11 +223,11 @@ variable  evaluate(){
       //else fetch
       v_top-=number_of_dimensions-1;
       get_value_from_array_into(working_stack[i].value ,accumulator, &v_stack[v_top]);
-      if (v_stack[v_top].type == STRV)
+  /*    if (v_stack[v_top].type == STRV)
 	printf("%s(%d)=%s retrieved --NOTE, THIS IS ENTIER BUFFER \n", working_stack[i].value, accumulator, string_buffer);
       else
 	printf("%s(%d)=%f retrieved\n", working_stack[i].value, accumulator, (v_stack[v_top].type == I)?(double)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
-      //continue
+      //continue*/
 
     }
     else if(working_stack[i].type == FUNCTION) {
@@ -258,7 +258,7 @@ variable  evaluate(){
         //will be an error, undimmed array.
 	//v_top -= number_of_dimensions-1;
         convert_variable_to_int(&v_stack[v_top]);
-        printf("dims calculated to %d\n", v_stack[v_top].value.intg);
+        //printf("dims calculated to %d\n", v_stack[v_top].value.intg);
         return(v_stack[v_top]);
 
       }

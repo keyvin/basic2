@@ -20,9 +20,9 @@ void line_handle_dim(char **line_text) {
       //check error
       unsigned int array_size = calculate_array_size();
       dim_array(&working_stack[working_top], array_size, v_top+1);
-      printf("ARRAY DIMMED %s, %d dimensions\n", working_stack[working_top].value, v_top+1);
+    /*  printf("ARRAY DIMMED %s, %d dimensions\n", working_stack[working_top].value, v_top+1);
       printf("NUMBER OF ELEMENTS: %d\n", array_size);
-      printf("Dimension values: ");
+      printf("Dimension values: ");*/
       for (int a = v_top; a >= 0; a--){
         set_dimension_n(working_stack[working_top].value, a, v_stack[a].value.intg);
         printf("%d   ", v_stack[a].value.intg);
@@ -34,7 +34,7 @@ void line_handle_dim(char **line_text) {
 
 void line_handle_print(char **line_text) {
     char *current = *line_text;
-    printf("in print\n");
+ //   printf("in print\n");
     expression(&current);
     evaluate();
     if (v_stack[v_top].type == STRV) {
@@ -78,7 +78,7 @@ void line_handle_if(char **line_text)
     EQ_SWITCH=REGULAR;
     expression(&current);
     evaluate();
-    printf("Value of if expression: %f", v_stack[v_top].value.sing);
+    //printf("Value of if expression: %f", v_stack[v_top].value.sing);
     if (control.type == FLOW && control.value[0]==THEN) {
         //logical true - we don't need to do anything.
         if (v_stack[v_top].value.sing != 0){
@@ -151,7 +151,7 @@ char *execute_line(char *line_text)
                 line_handle_print(&current);
                 break;
             case IF:
-                printf("IF\n");
+          //      printf("IF\n");
                 line_handle_if(&current);
                 break;
             case ELSE:
@@ -191,8 +191,8 @@ char *execute_line(char *line_text)
             expression(&current);
             //	dump_stack();
             evaluate();
-            printf("VARIABLE ASSIGNMENT: %s - %f", t1.value, v_stack[v_top].type == F?v_stack[v_top].value.sing:(float)v_stack[v_top].value.intg);
-            printf("v_top:%d\n, v_type:%d\n", v_top, t1.type);
+       //     printf("VARIABLE ASSIGNMENT: %s - %f", t1.value, v_stack[v_top].type == F?v_stack[v_top].value.sing:(float)v_stack[v_top].value.intg);
+      //      printf("v_top:%d\n, v_type:%d\n", v_top, t1.type);
             set_variable(t1.value, &v_stack[v_top]);
         }
         else {
@@ -205,12 +205,12 @@ char *execute_line(char *line_text)
             expression(&current);
             //	dump_stack();
             evaluate();
-            if (v_stack[v_top].type==STRV)
+        /*    if (v_stack[v_top].type==STRV)
                 printf("ARRAY ASSIGNMENT %s(%d)=%s\n", t1.value, offset, string_buffer);
             else
                 printf("ARRAY ASSIGNMENT %s(%d)=%f\n", t1.value, offset, (v_stack[v_top].type==I)? (float)v_stack[v_top].value.intg:v_stack[v_top].value.sing);
             set_value_in_array_from(t1.value, offset, &v_stack[v_top]);
-	//top of v_stack has name, offset
+	//top of v_stack has name, offset*/
         }
 
     }

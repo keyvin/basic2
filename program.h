@@ -37,11 +37,22 @@ typedef struct PROGRAM_LINE {
 
 typedef enum CF_STACK {cf_none, cf_for, cf_gosub, cf_while} cf_stack_type;
 
+
+typedef union FOR_RANGE {int i, float f} for_range;
+struct for_entry
+
+//current should be assigned to the initial value. for a = b to c means current represents a, and has an initial value of b
+//type (float/int) is held by the variable pointed to by the cf_stack_entry.
+typedef struct FOR_VALUE {
+    for_range stop;
+    for_range step;
+} for_value;
+
 struct CF_STACK_ENTRY {
     cf_stack_type cf_type;
     line_index return_line;
     char *position; //OPTIMIZATION - SPACE SAVINGS TO USE INT OFFSET
-    variable *for_var;
+    for_entry f_range;
 };
 
 

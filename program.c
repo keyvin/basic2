@@ -25,7 +25,7 @@ void execute() {
     line_return_type = r_ok;
     //This is where to check for global error state and alert the user!
     while (current != NULL && line_return_type != r_error ) {
-        printf("Line: %d\n", current->line_number);
+  //      printf("Line: %d\n", current->line_number);
         if (current->line_number==28){
          printf("f");
          }
@@ -42,7 +42,7 @@ void execute() {
         }
         if (line_return_type == r_goto) {
             //TODO check if ERROR was set - invalid line number.
-            printf("GOTO\n");
+           // printf("GOTO\n");
             program_line *tmp = program_start;
             while (tmp->next !=NULL && next_line != tmp->line_number)
                 tmp = tmp->next;
@@ -94,7 +94,7 @@ void execute() {
 
             cf_stack_top = stack_top;
             cf_stack_top--;
-            printf("RETURN\n");
+            //printf("RETURN\n");
             current = to_find;
             resume=cf_stack[stack_top].position;
         }

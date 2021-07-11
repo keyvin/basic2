@@ -1,19 +1,7 @@
-Functions and arrays first.
+FOR variables - need to add two globals (for_range, for_step) to handle r_for
 
+these will be calculated according to variable type, variable will be assigned the start range, and r_for will be returned
+the program.c code will add a for entry. Upon next, the code will add step to the variable, check if it is above (if neg step) or below (pos step)
+If it is inside the bounds, control returns to after the for. If it is outside, the for variable is removed from the stack.
 
-Arrays need to be backed by an appropriate data structure (or a flat array)
-For variables
-
-
-Need to implement:
-
-IF seek to THEN or ELSE/EOL
-
-Line numbers/programs, strings
-
-FOR variables
-GOSUB
-
-Strings especially - null terminated is wasteful and prevents pointing
-to program memory. 
-
+We only search back to the preceding gosub to find a for. Raise an Error if not.

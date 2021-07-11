@@ -40,15 +40,11 @@ typedef struct STRING {
 } string;
 
 //can use more restrictive type later. could contain pointer to line no
-typedef struct FOR_VAR {
-  int value;
-  int stop;
-  int step;
-  uint32_t line_number;
-} for_var;
+
 
 //value is *ALWAYS* an integer for arrays. After dimming, they live somewhere else. This value is used
 //for lookup and setting.
+
 
 typedef union VALUE {
   array ary;
@@ -56,7 +52,7 @@ typedef union VALUE {
   float sing;
   double dubl;
   string str;
-  for_var fvar;
+  for_value
 } value;
 
 
