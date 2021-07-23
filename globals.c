@@ -12,3 +12,5 @@ line_index current_line;
 enum return_type line_return_type;
 line_index next_line;
 char *return_position;
+for_value new_for;
+

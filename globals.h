@@ -4,6 +4,7 @@
 #include "variables.h"
 #include "tokens.h"
 #include "program.h"
+
 //TODO - IS IT POSSIBLE FOR STRINGSD ON THE EVALUATION VARIABLE STACK TO RESULT IN MEMORY LEAK?
 
 //emacchar reserved_words[][] = {"AND", "OR", "NOT", "IF", "THEN", "GOTO", "GOSUB", "END", "FOR", "NEXT", "WHILE", "WEND"}
@@ -33,6 +34,9 @@ unsigned int calculate_array_size();
 extern enum return_type line_return_type;
 extern line_index next_line;
 extern char *return_position;
+typedef struct FOR_VALUE for_value;
+extern for_value new_for;
+
 //this struct contains interpreter state information that should be saved to the stack.
 
 

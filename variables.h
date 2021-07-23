@@ -52,7 +52,6 @@ typedef union VALUE {
   float sing;
   double dubl;
   string str;
-  for_value
 } value;
 
 
