@@ -1,3 +1,4 @@
+Evaluate eats the next control symbol on a line. This is an issue for TO.
 FOR variables - need to add two globals (for_range, for_step) to handle r_for
 
 these will be calculated according to variable type, variable will be assigned the start range, and r_for will be returned

@@ -106,7 +106,10 @@ uint8_t expression(char **line)
     previous = next;
     if (*position=='\0')
       break;
+    //kludge for TO
+    char *tcur = position;
     read(&position, &next);
+    if (next.type == FLOW && next.value[0] == TO){ position = tcur; break;}
   }
   while (operator_top >=0)
     working_stack[++working_top] = operator_stack[operator_top--];

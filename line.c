@@ -18,6 +18,7 @@ void line_handle_for(char **line_text) {
     // determine int or )from variable type. set step values accordingly.
     //return new_fvar. program.h should add it to the stack.
     char *current = *line_text;
+    char *ctmp;
     variable *for_var = NULL;
     line_return_type = r_for;
     token t1, t2, t3;
@@ -49,6 +50,7 @@ void line_handle_for(char **line_text) {
         line_return_type = r_error;
         return;
     }
+    ctmp = current;
     read(&current, &t1);
     if (t1.type == FLOW && t1.value[0]==STEP){
         expression(&current);
@@ -63,7 +65,15 @@ void line_handle_for(char **line_text) {
             line_return_type = r_error;
             return;
         }
+
     }
+    else {
+        if (new_for.var->type == I)new_for.step.i = 1; else new_for.step.f = 1.0;
+        //rewind the last few reads.
+        current = ctmp;
+    }
+    line_return_type = r_for;
+    *line_text = current;
 }
 
 void line_handle_dim(char **line_text) {
@@ -218,6 +228,8 @@ char *execute_line(char *line_text)
                 return(current);
                 break;
             case FOR:
+                line_handle_for(&current);
+                return(current);
                 break;
             case DIM:
                 line_handle_dim(&current);

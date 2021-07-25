@@ -23,14 +23,16 @@ int main(int argv, char **argc)
   //  char *taktak = "F=3:DIM X(F,4+1,5):DIM Z(2, 2):Z(0,0)=1: Z(1,1)=1: V=Z(0,0): J=Z(1,1): X(1*4,2,3)=5+4*(3*2)/2:Y=5+X(X(3,3,3),X(2,2*Z(1,V),2),1)";
   //add_line("10 DIM f$(10): a$ =\"hello world\": PRINT a$: f$(0)=a$: c$=f$(0): f$(0)=\"again\":PRINT f$(0)+\"Hello World\"");
 //  add_line("20 HI=1:HO=1+HI: DIM FO(10): FO(1)=HO: FO(0)=FO(1):PRINT FO(0): FO(3)=3: FO(FO(3))=3:PRINT FO(3)");
-  add_line("25 P%=10");
-  add_line("26 IF P%>5 THEN P%=P%-1: PRINT P%:GOTO 26 ELSE PRINT P%");
-  add_line("27 IF P%>3 THEN GOSUB 30:PRINT P%: GOTO 27 ELSE PRINT P%");
-  add_line("28 GOTO 50");
-  add_line("30 P%=P%-1: GOSUB 42: RETURN ");
-  add_line("50 P%=0");
-  add_line("42 PRINT P%: RETURN ");
-
+//  add_line("25 P%=10");
+//  add_line("26 IF P%>5 THEN P%=P%-1: PRINT P%:GOTO 26 ELSE PRINT P%");
+//  add_line("27 IF P%>3 THEN GOSUB 30:PRINT P%: GOTO 27 ELSE PRINT P%");
+//  add_line("28 GOTO 50");
+//  add_line("30 P%=P%-1: GOSUB 42: RETURN ");
+//  add_line("50 P%=0");
+//  add_line("42 PRINT P%: RETURN ");
+    add_line("1 PRINT 2+2 ");
+    add_line("10 FOR A = 1 TO 10: PRINT A");
+    add_line("20 P=2");
 
   //add_line("PRINT \"FINISHED\"");
   //add_line("30 PRINT f$(0)+\" \"");

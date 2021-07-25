@@ -102,6 +102,16 @@ void execute() {
 
         }
         if (line_return_type == r_for){
+            uint8_t do_more = 0;
+            //TODO - determine if this for entry already exists. If so, overwrite it.
+
+            while (cf_stack[cf_stack_top])
+            if (new_for.var){
+
+                cf_stack[cf_stack_top].cf_type = cf_for;
+                cf_stack[cf_stack_top].position = ret;
+                cf_stack[cf_stack_top].return_line = current->line_number;
+            }
 
         }
 
