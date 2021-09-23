@@ -36,8 +36,9 @@ void increment(unpacked_f *o1) {
 
 void unpack (uint32_t t, unpacked_f *result) {
     //will be stored in reverse order
-    uint8_t *p = (uint8_t *) t;
-    if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) {
+
+    uint8_t *p = &t;
+    if (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__) {
         result->exponent = *(p+3);
         result->sign = *(p+2)&0x80;
         //implicit 1
@@ -59,9 +60,27 @@ void unpack (uint32_t t, unpacked_f *result) {
 
 packed_f pack(unpacked_f *o1) {
     packed_f a = 0;
+    packed_f result = 0;
     a = o1->exponent;
     a = a <<24;
-    return 0;
+    //positive is zero, so set if negative, clear if positive
+    result = a;
+    if (o1->sign)
+        o1->mantessa[0]=o1->mantessa[0] | 0x80;
+    else
+        o1->mantessa[0]=o1->mantessa[0] & 0x7f;
+    a=0;
+    a = o1->mantessa[0];
+    a = a << 16;
+    result = result | a;
+    a = 0;
+    a = o1->mantessa[1];
+    a = a << 8;
+    result = result | a;
+    a = 0;
+    a = o1->mantessa[2];
+    result = result | a;
+    return result;
 }
 
 
@@ -175,6 +194,7 @@ void add(unpacked_f *o1, unpacked_f *o2) {
         overflow = 0;
         uint8_t old_exp = o1->exponent;
         o1->exponent+=1;
+        o1->mantessa[0] = o1->mantessa[0]|0x80;
         shift_right(1,o1);
         if (o1->exponent < old_exp) { //overflow in exponent
             overflow = 1;
@@ -210,7 +230,7 @@ void shift_left(unpacked_f *o1)
     uint8_t high_bit = 0;
     high_bit = o1->mantessa[3] & 0x80;
     o1->mantessa[3] = o1->mantessa[3] << 1;
-    for (int i = 2; i >0; i--){
+    for (int i = 2; i >=0; i--){
         if (high_bit) {
             high_bit = o1->mantessa[i] & 0x80;
             o1->mantessa[i] = o1->mantessa[i] << 1;
@@ -297,23 +317,39 @@ packed_f add_f(packed_f f1, packed_f f2) {
     }
     else {
         registers = &o1;
-        fac = &o1;
+        fac = &o2;
     }
+    //align
+    uint8_t shift = fac->exponent - registers->exponent;
+    if (shift) shift_right(shift, registers);
+    //once aligned, exponent of the registers is the same as the FAC.
+    registers->exponent = fac->exponent;
     if (o1.sign != o2.sign) {
-        subtract(registers, fac)
+        subtract(registers, fac);
     }
     else {
         add(registers, fac);
     }
+
     normalize(registers);
-    round(registers);
+    round_f(registers);
     return pack(registers);
 }
 
+void print_binary(int number)
+{
+    if (number) {
+        print_binary(number >> 1);
+        putc((number & 1) ? '1' : '0', stdout);
 
+    }https://wwwCP/M.mouser.co.uk/datasheet/2/450/z8s180ps-28828.pdf
+}
 
 int main()
 {
+    uint32_t p1 = 0x8380F100;
+    uint32_t p2 = 0x83001000;
+    printf("%x", add_f(p1,p2));
     printf("Hello world!\n");
     return 0;
 }
