@@ -88,7 +88,7 @@ packed_f pack(unpacked_f *o1) {
 void shift_right(uint8_t right_shift, unpacked_f *target) {
     uint8_t low_bit_true = 0;
     uint8_t high_bit_true = 0;
-    uint8_t high_unset_set[] = {0x7F,0xFF} ;
+    //uint8_t high_unset_set[] = {0x7F,0xFF} ;
     //clear underflow
     target->mantessa[3] =0;
 
@@ -98,11 +98,21 @@ void shift_right(uint8_t right_shift, unpacked_f *target) {
             target->mantessa[0] = target->mantessa[0] & 0x7F;
             high_bit_true = low_bit_true;
             low_bit_true = target->mantessa[1] & 0x01;
-            target->mantessa[1]  = (target->mantessa[1] >> 1) & high_unset_set[high_bit_true];
+            if (high_bit_true)
+                target->mantessa[1]  = (target->mantessa[1] >> 1) | 0x80;
+            else
+                target->mantessa[1] = (target->mantessa[1] >> 1) & 0x7F;
             high_bit_true = low_bit_true;
             low_bit_true = target->mantessa[2] & 0x01;
-            target->mantessa[2] = (target->mantessa[2] >> 1) & high_unset_set[high_bit_true];
-            target->mantessa[3] = (target->mantessa[3] >> 1) & high_unset_set[low_bit_true];
+            if (high_bit_true)
+                target->mantessa[2]  = (target->mantessa[2] >> 1) | 0x80;
+            else
+                target->mantessa[2] = (target->mantessa[2] >> 1) & 0x7F;
+            if (low_bit_true)
+                target->mantessa[3]  = (target->mantessa[3] >> 1) | 0x80;
+            else
+                target->mantessa[3] = (target->mantessa[3] >> 1) & 0x7F;
+
     }
     return;
 }
@@ -181,11 +191,12 @@ void add(unpacked_f *o1, unpacked_f *o2) {
     }
     scratch1 += scratch2;
     o1->mantessa[1] = (uint8_t) scratch1;
-    carry = (scratch1 & 0x0300) >>8;
+    carry = (scratch1 & 0x0100);
     scratch1 = scratch2 = 0x0000;
     scratch1 = o1->mantessa[0];
     scratch2 = o2->mantessa[0];
-    scratch1 +=carry;
+    if(carry)
+        scratch1 +=1;
     scratch1 += scratch2;
     if (scratch1 & 0x0300)
         overflow = 1;
@@ -194,8 +205,8 @@ void add(unpacked_f *o1, unpacked_f *o2) {
         overflow = 0;
         uint8_t old_exp = o1->exponent;
         o1->exponent+=1;
-        o1->mantessa[0] = o1->mantessa[0]|0x80;
         shift_right(1,o1);
+        o1->mantessa[0] = o1->mantessa[0]|0x80;
         if (o1->exponent < old_exp) { //overflow in exponent
             overflow = 1;
         }
@@ -336,20 +347,26 @@ packed_f add_f(packed_f f1, packed_f f2) {
     return pack(registers);
 }
 
-void print_binary(int number)
+void print_binary(packed_f number)
 {
     if (number) {
         print_binary(number >> 1);
         putc((number & 1) ? '1' : '0', stdout);
 
-    }https://wwwCP/M.mouser.co.uk/datasheet/2/450/z8s180ps-28828.pdf
+    }
 }
 
 int main()
 {
-    uint32_t p1 = 0x8380F100;
-    uint32_t p2 = 0x83001000;
-    printf("%x", add_f(p1,p2));
-    printf("Hello world!\n");
+    uint32_t p1 = 0x8300F100;
+    uint32_t p2 = 0x83000000;
+    printf("%x\n", add_f(p1,p2));
+    packed_f p3 = add_f(p1,p2);
+    print_binary(p1);
+    printf("\n");
+    print_binary(p2);
+    printf("\n");
+    print_binary(p3);
+    printf("\n");
     return 0;
 }

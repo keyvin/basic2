@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1632405072 source:/home/keyvin/basic2/mbinary/main.c
+1632426847 source:/home/keyvin/basic2/mbinary/main.c
 	<stdio.h>
 	<stdlib.h>
 	<stdint.h>
