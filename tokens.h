@@ -50,6 +50,11 @@
 #define MID 39
 
 
+#define VARIABLE 100
+#define STRING 101
+#define SINGLE 102
+#define INT 103
+#define DOUBLE 104
 
 #define FLOW_START 20
 

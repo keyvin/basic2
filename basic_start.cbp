@@ -58,6 +58,10 @@
 		</Unit>
 		<Unit filename="program.h" />
 		<Unit filename="todo.txt" />
+		<Unit filename="tokenized_line.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tokenized_line.h" />
 		<Unit filename="tokens.c">
 			<Option compilerVar="CC" />
 		</Unit>
